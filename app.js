@@ -59,7 +59,6 @@ io.on('connection',function(socket){
 	});
 	
 	socket.on('shot',function(shot){
-		console.log('PEW PEW');
 		addToShots(shot);
 		console.log(shot);
 		

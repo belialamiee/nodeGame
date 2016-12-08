@@ -85,7 +85,7 @@
 		if(activeShots){
 		
 			activeShots.forEach(function(shot){
-				ctx.drawImage(shotImage, shot.x, shot.y, 16,16);
+				ctx.drawImage(shotImage, shot.x, shot.y, 8,8);
 			});
 		}
 	}
@@ -115,9 +115,14 @@
         }
 		
 		if(event.which == 32){
+		var y = 0;
+		if(user.direction != "left"){
+		y = 25
+		}
+		
 			var shot = {
-				x : user.x,
-				y : (user.y + 9),
+				x : user.x + y,
+				y : (user.y + 12),
 				velocity : user.direction
 			};
 			socket.emit('shot',shot)
