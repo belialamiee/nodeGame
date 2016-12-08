@@ -1,0 +1,132 @@
+<html>
+<head>
+<script src="/socket.io/socket.io.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="username"></div>
+
+<div>
+    <canvas style="width:500px; height:500px; border:1px solid black;" id="myCanvas">
+    </canvas>
+</div>
+</body>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script>
+
+	var background = new Image();
+	background.src = "background.png";
+
+	var playerLeft = new Image();
+	playerLeft.src = "playerLeft.png"
+
+	var playerRight = new Image();
+	playerRight.src = "playerRight.png"
+	
+	var shot = new Image();
+	shot.src = "pew.png"
+	
+	var image = playerLeft;
+
+	var socket = io();
+
+	var players = [];
+	var colours = {
+	1:"#FF0000",
+	2:"#FFFF00",
+	3:"#00FF00",
+	4:"#00FFFF",
+	5:"#0000FF",
+	6:"#808080",
+	7:"#FF00FF",
+	8:"#FFA500",
+	9:"#800000",
+	}
+    var user = {
+		name: Math.round(Math.random() * 10),
+        x: 99,
+        y: 99,
+		direction: "left"
+    }
+	
+	
+	
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+	
+  function drawCanvas(users) {
+		ctx.clearRect(0, 0, 500,500 );
+		ctx.drawImage(background, 0,0,500,500)
+		if(users){
+		
+			users.forEach(function(player){
+				if(player.direction == "left"){
+					image = playerLeft;
+				}else{
+					image = playerRight;
+				}
+			ctx.drawImage(image, player.x, player.y,32,32);				
+			});
+		}
+	}
+    $(document).keydown(function () {
+        // left, up, right, down
+        if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
+            event.preventDefault();
+        }
+        // left
+        if (event.which == 37 || event.which == 65) {
+            user.direction = "left";
+			user.x--;
+        }
+        // right
+        if (event.which == 39 || event.which == 68) {
+            user.direction = "right";
+			user.x++;
+        }
+        //down
+        if (event.which == 38 || event.which == 87) {
+            user.y--;
+        }
+        // up
+        if (event.which == 40 || event.which == 83) {
+            user.y++;
+        }
+		
+		if(event.which == 32){
+			var shot = {
+				x : user.x,
+				y : user.y,
+				velocity : player.direction
+			};
+			socket.emit('shot',shot)
+		}
+        socket.emit('user',user);
+		
+    }); 
+
+	socket.on('players', function(users){
+		drawCanvas(users);
+	});
+	socket.on('shots',function(shots){
+				
+		
+	});
+	
+  socket.emit('user',user);
+  
+</script>
+</html>
