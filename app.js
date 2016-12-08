@@ -32,15 +32,16 @@ function updateUsers(user){
 
 //update the location of all shots
 function updateShots(){
-	shots.forEach(fuunction(shot){
+	shots.forEach(function(shot){
 		if (shot.velocity == "left"){
-			shot.x++;
+			shot.x--;
 		}else{
-			shot.y++;
+			shot.x++;
 		}
 	});
 	io.emit('shots',shots);
-}
+	
+	}
 	//add  a bullet to the shots
 function addToShots(shot){
 	shots.push(shot);
@@ -60,8 +61,9 @@ io.on('connection',function(socket){
 	socket.on('shot',function(shot){
 		console.log('PEW PEW');
 		addToShots(shot);
+		console.log(shot);
 		
 	});
 });
 
-setInterval(updateShots, 1000);
+setInterval(updateShots, 10);

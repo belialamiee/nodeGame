@@ -36,8 +36,8 @@
 	var playerRight = new Image();
 	playerRight.src = "playerRight.png"
 	
-	var shot = new Image();
-	shot.src = "pew.png"
+	var shotImage = new Image();
+	shotImage.src = "pew.png"
 	
 	var image = playerLeft;
 
@@ -61,18 +61,19 @@
         y: 99,
 		direction: "left"
     }
+	var activeShots = [];
 	
 	
 	
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
 	
-  function drawCanvas(users) {
+  function drawCanvas() {
 		ctx.clearRect(0, 0, 500,500 );
 		ctx.drawImage(background, 0,0,500,500)
-		if(users){
+		if(players){
 		
-			users.forEach(function(player){
+			players.forEach(function(player){
 				if(player.direction == "left"){
 					image = playerLeft;
 				}else{
@@ -81,7 +82,14 @@
 			ctx.drawImage(image, player.x, player.y,32,32);				
 			});
 		}
+		if(activeShots){
+		
+			activeShots.forEach(function(shot){
+				ctx.drawImage(shotImage, shot.x, shot.y, 16,16);
+			});
+		}
 	}
+
     $(document).keydown(function () {
         // left, up, right, down
         if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
@@ -109,8 +117,8 @@
 		if(event.which == 32){
 			var shot = {
 				x : user.x,
-				y : user.y,
-				velocity : player.direction
+				y : (user.y + 9),
+				velocity : user.direction
 			};
 			socket.emit('shot',shot)
 		}
@@ -119,11 +127,12 @@
     }); 
 
 	socket.on('players', function(users){
-		drawCanvas(users);
+		players = users;
+		drawCanvas();
 	});
 	socket.on('shots',function(shots){
-				
-		
+		activeShots = shots;	
+		drawCanvas();
 	});
 	
   socket.emit('user',user);
