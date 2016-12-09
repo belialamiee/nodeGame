@@ -3,15 +3,18 @@ var app = express();
 var port = process.env.PORT || 8080;
 var server = app.listen(port);
 var io = require('socket.io').listen(server);
-
+//set up the public folder to load audio, images and js scripts for the webpage.
 app.use(express.static('public'))
-
-var players = [];
-var shots = [];
+//serve the web page.
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
 
+
+var players = [];
+var shots = [];
+
+//update the loaction of all the users.
 function updateUsers(user){
 	var notFound = true;
 	players.forEach(function(player){
@@ -41,18 +44,21 @@ function updateShots(){
 		//need to fix this so it has 16px in any direction as a hit. this way it doesn't just take the middle as a hit
 		if(player.x == shot.x && player.y == shot.y){
 			//find the player index and remove them from the player list
-				
 			
+			//then send them a message they have been shot.
+				//add to shooters score
 		}
 		});
 	});
 	io.emit('shots',shots);
 	}
-	//add  a bullet to the shots
+
+//add  a bullet to the shots
 function addToShots(shot){
 	shots.push(shot);
 }
 
+//handle incoming messages
 io.on('connection',function(socket){
 	socket.on('user',function(msg){
 		console.log(msg);
