@@ -29,7 +29,6 @@ function updateUsers(user){
 	io.emit('players', players);
 }
 
-
 //update the location of all shots
 function updateShots(){
 	shots.forEach(function(shot){
@@ -38,9 +37,16 @@ function updateShots(){
 		}else{
 			shot.x++;
 		}
+		players.forEach(function(player){
+		//need to fix this so it has 16px in any direction as a hit. this way it doesn't just take the middle as a hit
+		if(player.x == shot.x && player.y == shot.y){
+			//find the player index and remove them from the player list
+				
+			
+		}
+		});
 	});
 	io.emit('shots',shots);
-	
 	}
 	//add  a bullet to the shots
 function addToShots(shot){
@@ -49,18 +55,17 @@ function addToShots(shot){
 
 io.on('connection',function(socket){
 	socket.on('user',function(msg){
-	console.log(msg);
+		console.log(msg);
 		//update where this user is on the system
 		updateUsers(msg)
-		//send back to the players
-		
 	});
-	socket.on('disconnect',function(){
+	socket.on('disconnect',function(user){
+			console.log("user has disconnected");
 	});
 	
 	socket.on('shot',function(shot){
 		addToShots(shot);
-		console.log(shot);
+		io.emit('pew',null);
 		
 	});
 });

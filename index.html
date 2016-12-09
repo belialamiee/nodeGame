@@ -20,6 +20,8 @@
 <div>
     <canvas style="width:500px; height:500px; border:1px solid black;" id="myCanvas">
     </canvas>
+	
+	<div class="players"></div>
 </div>
 </body>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
@@ -37,7 +39,11 @@
 	playerRight.src = "playerRight.png"
 	
 	var shotImage = new Image();
-	shotImage.src = "pew.png"
+	shotImage.src = "pew.png";
+	
+	var pew = new Audio('pew.mp3');
+	
+	var backgroundMusic = new Audio('yackety.mp3');
 	
 	var image = playerLeft;
 
@@ -59,7 +65,9 @@
 		name: Math.round(Math.random() * 10),
         x: 99,
         y: 99,
-		direction: "left"
+		direction: "left",
+		score: 0
+	
     }
 	var activeShots = [];
 	
@@ -69,6 +77,7 @@
     var ctx = c.getContext("2d");
 	
   function drawCanvas() {
+		updateScores();
 		ctx.clearRect(0, 0, 500,500 );
 		ctx.drawImage(background, 0,0,500,500)
 		if(players){
@@ -121,6 +130,7 @@
 		}
 		
 			var shot = {
+				user: user.id,
 				x : user.x + y,
 				y : (user.y + 12),
 				velocity : user.direction
@@ -140,7 +150,29 @@
 		drawCanvas();
 	});
 	
+	socket.on('pew',function(){
+		pew.currentTime = 0;
+		pew.play();
+	});
+	
+	socket.on('hit', function(player){
+		if(player.id == user.id){
+			//handle death, somehow we need to disable or respawn them
+		}
+	});
+	
+	
   socket.emit('user',user);
+  
+  function updateScores(){
+	var html = "";
+	players.forEach(function(player){
+		html += "<p>"+ player.name+ ": "+ player.score +"</p>"	
+	});
+	$(".players").html(html);
+  }
+//  backgroundMusic.play();
+    
   
 </script>
 </html>
