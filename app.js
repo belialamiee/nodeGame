@@ -14,19 +14,22 @@ app.get('/', function(req, res){
 var players = [];
 var shots = [];
 
-//update the loaction of all the users.
+//update the location of all the users.
 function updateUsers(user){
 	var notFound = true;
 	players.forEach(function(player){
-		if (player.name == user.name){
+		if (player.id == user.id){
+			player.username = user.username;
 			player.x = user.x;
 			player.y = user.y;
-			player.direction = user.direction;			
+			player.direction = user.direction;	
+			player.score = 0;			
 			notFound = false;
 		}
 	});
 
 	if(notFound){
+	console.log(user)
 		players.push(user);
 	}
 	io.emit('players', players);

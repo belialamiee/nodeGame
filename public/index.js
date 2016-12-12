@@ -24,7 +24,8 @@
 
 	//our user.
     var user = {
-		name: Math.round(Math.random()),
+		id: Math.random(),
+		username: Math.round(Math.random()),
         x: Math.round(Math.random() * 500),
         y: Math.round(Math.random() * 500),
 		direction: "left"
@@ -37,8 +38,8 @@
     var ctx = c.getContext("2d");
 	
 	$("#username").on("blur",function(){
-			user.name = $("#username").val();
-			console.log('1s');
+			user.username = $("#username").val();
+			
 	});
 	
 	//draw canvas
@@ -69,8 +70,9 @@
 	function updateScores(){
 		var html = "";
 		players.forEach(function(player){
-			html += "<p>"+ player.name+ ": "+ player.score +"</p>"	
+			html += "<p>"+ player.username + ": "+ player.score +"</p>"	
 		});
+
 		$(".players").html(html);
 	}
 
@@ -141,5 +143,5 @@
 	
   socket.emit('user',user);
   
- 
+
 //  backgroundMusic.play();
