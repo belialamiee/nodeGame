@@ -25,10 +25,11 @@
 	//our user.
     var user = {
 		id: Math.random(),
-		username: Math.round(Math.random()),
+		username: Math.random(),
         x: Math.round(Math.random() * 500),
         y: Math.round(Math.random() * 500),
-		direction: "left"
+		direction: "left",
+		alive: true
 	
     }
 	
@@ -70,12 +71,17 @@
 	function updateScores(){
 		var html = "";
 		players.forEach(function(player){
-			html += "<p>"+ player.username + ": "+ player.score +"</p>"	
+			html += "<p>"+ player.username + ": "+ player.score;
+			if(player.alive == false){
+				html += " : DEAD";
+			}
+			html += "</p>"	
 		});
 
 		$(".players").html(html);
 	}
 
+		
 	//handle key events
     $(document).keydown(function () {
         // left, up, right, down
@@ -116,9 +122,8 @@
 			socket.emit('shot',shot)
 		}
         socket.emit('user',user);
-		
-    }); 
-
+		}); 
+	
 	//handle incoming information
 	socket.on('players', function(users){
 		players = users;

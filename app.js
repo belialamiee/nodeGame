@@ -23,7 +23,7 @@ function updateUsers(user){
 			player.x = user.x;
 			player.y = user.y;
 			player.direction = user.direction;	
-			player.score = 0;			
+			player.score = 0;		
 			notFound = false;
 		}
 	});
@@ -45,13 +45,16 @@ function updateShots(){
 		}
 		players.forEach(function(player){
 		//need to fix this so it has 16px in any direction as a hit. this way it doesn't just take the middle as a hit
-		if(player.x == shot.x && player.y == shot.y){
-			//find the player index and remove them from the player list
-			
-			//then send them a message they have been shot.
-				//add to shooters score
+		if(player.x > shot.x - 16 
+		&& player.x < shot.x + 16  
+		&& player.y >  shot.y - 16 
+		&& player.y < shot.y + 16 
+		&& player.id  != shot.user
+		){
+		player.alive = false;
 		}
 		});
+				io.emit('players',players);
 	});
 	io.emit('shots',shots);
 	}
