@@ -22,14 +22,14 @@ function updateUsers(user){
 			player.username = user.username;
 			player.x = user.x;
 			player.y = user.y;
-			player.direction = user.direction;	
-			player.score = 0;		
+			player.direction = user.direction;			
 			notFound = false;
 		}
 	});
 
 	if(notFound){
 	console.log(user)
+	user.score = 0;
 		players.push(user);
 	}
 	io.emit('players', players);
@@ -37,7 +37,7 @@ function updateUsers(user){
 
 //update the location of all shots
 function updateShots(){
-	shots.forEach(function(shot){
+	shots.forEach(function(shot, index, object){
 		if (shot.velocity == "left"){
 			shot.x--;
 		}else{
@@ -50,14 +50,29 @@ function updateShots(){
 		&& player.y >  shot.y - 16 
 		&& player.y < shot.y + 16 
 		&& player.id  != shot.user
-		){
-		player.alive = false;
+		){	
+			player.alive = false;
+			updateScore(shot);
+			object.splice(index,1);
+			
+			//remove the shot from the game.
 		}
 		});
 				io.emit('players',players);
 	});
 	io.emit('shots',shots);
-	}
+}
+
+function updateScore(shot){
+	players.forEach(function(player){
+		if(shot.user == player.id){
+			player.score++;
+		}	
+	});
+	
+	io.emit('players',players);
+	
+}	
 
 //add  a bullet to the shots
 function addToShots(shot){
