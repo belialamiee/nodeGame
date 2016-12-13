@@ -43,20 +43,22 @@ function updateShots(){
 		}else{
 			shot.x++;
 		}
+		
+		if(shot.x > 500 || shot.x < 0 || shot.y > 500 || shot.y < 0){
+			object.splice(index,1);
+		}
 		players.forEach(function(player){
 		//need to fix this so it has 16px in any direction as a hit. this way it doesn't just take the middle as a hit
-		if(player.x > shot.x - 16 
-		&& player.x < shot.x + 16  
-		&& player.y >  shot.y - 16 
-		&& player.y < shot.y + 16 
+		if(shot.x > player.x
+		&& shot.x < player.x + 22 
+		&& shot.y >  player.y -5
+		&& shot.y < player.y + 27  
 		&& player.id  != shot.user
 		){	
 			player.alive = false;
 			updateScore(shot);
 			object.splice(index,1);
-			
-			//remove the shot from the game.
-		}
+			}
 		});
 				io.emit('players',players);
 	});
@@ -82,7 +84,7 @@ function addToShots(shot){
 //handle incoming messages
 io.on('connection',function(socket){
 	socket.on('user',function(msg){
-		console.log(msg);
+	//	console.log(msg);
 		//update where this user is on the system
 		updateUsers(msg)
 	});
