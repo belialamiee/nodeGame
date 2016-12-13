@@ -11,6 +11,9 @@
 	var shotImage = new Image();
 	shotImage.src = "pew.png";
 	
+	var deadImage = new Image();
+	deadImage.src = "pew.png";
+	
 	var pew = new Audio('pew.mp3');
 	
 	var backgroundMusic = new Audio('yackety.mp3');
