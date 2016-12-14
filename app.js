@@ -36,7 +36,7 @@ function updateUsers(user){
 }
 
 //update the location of all shots
-function updateShots(){
+function updateGame(){
 	shots.forEach(function(shot, index, object){
 		if (shot.velocity == "left"){
 			shot.x--;
@@ -54,17 +54,34 @@ function updateShots(){
 		&& shot.y >  player.y -5
 		&& shot.y < player.y + 27  
 		&& player.id  != shot.user
+		&& player.alive
 		){	
 			player.alive = false;
-			player.x = 0;
-			player.y = 0;
 			updateScore(shot);
 			object.splice(index,1);
+			console.log(player.username + "was killed");
 			}
 		});
 				io.emit('players',players);
 	});
 	io.emit('shots',shots);
+	
+	//if only one player is left alive then restart the game.
+		//	if(){
+		//	restartGame();
+		//	}
+
+}
+
+//start the game, make sure everyone is alive and place them in random positions
+function restartGame(){
+	players.forEach(function(player){
+		player.alive = true;
+		player.x = Math.round(Math.random() * 480);
+        player.y = Math.round(Math.random() * 480);
+	});
+	io.emit('players',players);
+
 }
 
 function updateScore(shot){
@@ -73,9 +90,7 @@ function updateScore(shot){
 			player.score++;
 		}	
 	});
-	
 	io.emit('players',players);
-	
 }	
 
 //add  a bullet to the shots
@@ -86,8 +101,6 @@ function addToShots(shot){
 //handle incoming messages
 io.on('connection',function(socket){
 	socket.on('user',function(msg){
-	//	console.log(msg);
-		//update where this user is on the system
 		updateUsers(msg)
 	});
 	socket.on('disconnect',function(user){
@@ -101,4 +114,4 @@ io.on('connection',function(socket){
 	});
 });
 
-setInterval(updateShots, 10);
+setInterval(updateGame, 10);

@@ -12,7 +12,7 @@
 	shotImage.src = "pew.png";
 	
 	var deadImage = new Image();
-	deadImage.src = "pew.png";
+	deadImage.src = "blood.png";
 	
 	var pew = new Audio('pew.mp3');
 	
@@ -29,8 +29,8 @@
     var user = {
 		id: Math.random(),
 		username: Math.random(),
-        x: Math.round(Math.random() * 500),
-        y: Math.round(Math.random() * 500),
+        x: Math.round(Math.random() * 480),
+        y: Math.round(Math.random() * 480),
 		direction: "left",
 		alive: true
 	
@@ -59,7 +59,11 @@
 				}else{
 					image = playerRight;
 				}
-			ctx.drawImage(image, player.x, player.y,32,32);				
+				if(!player.alive){
+					image = deadImage;
+				}
+				ctx.drawImage(image, player.x, player.y,32,32);				
+		
 			});
 		}
 		if(activeShots){
