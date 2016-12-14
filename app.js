@@ -56,6 +56,8 @@ function updateShots(){
 		&& player.id  != shot.user
 		){	
 			player.alive = false;
+			player.x = 0;
+			player.y = 0;
 			updateScore(shot);
 			object.splice(index,1);
 			}

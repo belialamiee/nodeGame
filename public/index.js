@@ -88,6 +88,8 @@
 	//handle key events
     $(document).keydown(function () {
         // left, up, right, down
+		if(user.alive){
+		console.log(user.alive);
         if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
             event.preventDefault();
         }
@@ -111,25 +113,32 @@
         }
 		
 		if(event.which == 32){
-		var y = 0;
+		var shotOffset = 0;
 		if(user.direction != "left"){
-		y = 25
+		shotOffset = 25
 		}
 		
 			var shot = {
 				user: user.id,
-				x : user.x + y,
+				x : user.x + shotOffset,
 				y : (user.y + 12),
 				velocity : user.direction
 			};
 			socket.emit('shot',shot)
 		}
-        socket.emit('user',user);
+        }
+		socket.emit('user',user);
 		}); 
 	
 	//handle incoming information
 	socket.on('players', function(users){
 		players = users;
+		players.forEach(function(player){
+			if(player.id == user.id){
+				user = player;
+			}
+		});
+		
 		drawCanvas();
 	});
 	socket.on('shots',function(shots){
@@ -142,11 +151,7 @@
 		pew.play();
 	});
 	
-	socket.on('hit', function(player){
-		if(player.id == user.id){
-			//handle death, somehow we need to disable or respawn them
-		}
-	});
+
 	
 	
   socket.emit('user',user);
