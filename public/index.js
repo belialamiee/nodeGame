@@ -100,20 +100,20 @@
         // left
         if (event.which == 37 || event.which == 65) {
             user.direction = "left";
-			user.x--;
+			user.x -= 2;
         }
         // right
         if (event.which == 39 || event.which == 68) {
             user.direction = "right";
-			user.x++;
+			user.x += 2;
         }
         //down
         if (event.which == 38 || event.which == 87) {
-            user.y--;
+            user.y -= 3;
         }
         // up
         if (event.which == 40 || event.which == 83) {
-            user.y++;
+            user.y += 2;
         }
 		
 		if(event.which == 32){

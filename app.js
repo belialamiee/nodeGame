@@ -11,6 +11,9 @@ app.get('/', function(req, res){
 });
 
 
+//todo gracefully handle discconects, save id to cookie so that we don't create new players by hitting refresh, add colours/name tags, slow down restarts, give the players a moment to savour their glory, add in bonus for being last one alive.
+
+var livePlayers = 0;
 var players = [];
 var shots = [];
 
@@ -28,9 +31,9 @@ function updateUsers(user){
 	});
 
 	if(notFound){
-	console.log(user)
-	user.score = 0;
+		user.score = 0;
 		players.push(user);
+		livePlayers++;
 	}
 	io.emit('players', players);
 }
@@ -57,9 +60,10 @@ function updateGame(){
 		&& player.alive
 		){	
 			player.alive = false;
+			livePlayers--;
 			updateScore(shot);
 			object.splice(index,1);
-			console.log(player.username + "was killed");
+			console.log(player.username + " was killed");
 			}
 		});
 				io.emit('players',players);
@@ -67,9 +71,9 @@ function updateGame(){
 	io.emit('shots',shots);
 	
 	//if only one player is left alive then restart the game.
-		//	if(){
-		//	restartGame();
-		//	}
+			if(livePlayers <= 1 && players.length > 1){
+				restartGame();
+			}
 
 }
 
@@ -80,6 +84,7 @@ function restartGame(){
 		player.x = Math.round(Math.random() * 480);
         player.y = Math.round(Math.random() * 480);
 	});
+	livePlayers = players.length;
 	io.emit('players',players);
 
 }
