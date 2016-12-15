@@ -19,6 +19,9 @@
 	var backgroundMusic = new Audio('yackety.mp3');
 	
 	var image = playerLeft;
+	
+	var fireRate = 2;
+	var lastFire = new Date();
 
 	var socket = io();
 
@@ -117,10 +120,13 @@
         }
 		
 		if(event.which == 32){
-		var shotOffset = 0;
-		if(user.direction != "left"){
-		shotOffset = 25
-		}
+			var cFire = new Date();
+
+		if ((cFire - lastFire) / 1000 > 1/fireRate){            
+        	var shotOffset = 0;
+			if(user.direction != "left"){
+				shotOffset = 25
+			}
 		
 			var shot = {
 				user: user.id,
@@ -129,6 +135,9 @@
 				velocity : user.direction
 			};
 			socket.emit('shot',shot)
+			lastFire = cFire;
+		}
+		
 		}
         }
 		socket.emit('user',user);
