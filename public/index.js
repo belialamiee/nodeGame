@@ -123,7 +123,7 @@
 	//disable movement when the user is dead or typing names or chats
 	if(user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))){
         // left, up, right, down
-
+//todo movement should be handled by the server, just send the velocity to the server.
 	    if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
             event.preventDefault();
         }
@@ -148,27 +148,24 @@
 		
 		if(event.which == 32){
 			var cFire = new Date();
-
-		if ((cFire - lastFire) / 1000 > 1/fireRate){            
-        	var shotOffset = 0;
-			if(user.direction != "left"){
-				shotOffset = 25
+				if ((cFire - lastFire) / 1000 > 1/fireRate){            
+					var shotOffset = 0;
+					if(user.direction != "left"){
+						shotOffset = 25
+					}
+					var shot = {
+						user: user.id,
+						x : user.x + shotOffset,
+						y : (user.y + 12),
+						velocity : user.direction
+					};
+					socket.emit('shot',shot)
+					lastFire = cFire;
+				}
 			}
-		
-			var shot = {
-				user: user.id,
-				x : user.x + shotOffset,
-				y : (user.y + 12),
-				velocity : user.direction
-			};
-			socket.emit('shot',shot)
-			lastFire = cFire;
-		}
-		
-		}
         }
 		socket.emit('user',user);
-		}); 
+	}); 
 	
 	//handle incoming information
 	socket.on('players', function(users){
