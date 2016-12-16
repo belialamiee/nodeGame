@@ -16,26 +16,35 @@
 <style>
 .players{
 	height: 300px;
-	overflow:scroll;
+	overflow-y :scroll;
 }
 </style>
 </head>
 <body>
-<div class="form-group">
-	<label class="col-md-1">
-		Name :
-	</label>
+<div class="col-md-12">
 	<div class="col-md-3">
 		<div class="form-group">
-			<input class="form-control" id="username" />
-		</div>
-		<div class="form-group">
-			<div class="players"></div>
+			<label class="col-md-3">
+				Name 
+			</label>
+			<div class="col-md-9">
+				<div class="form-group">
+					<input class="form-control" id="username" />
+				</div>
+				<div class="form-group">
+					<div class="players"></div>
+				</div>
+			</div>
 		</div>
 	</div>
-</div>
-<div>
-    <canvas width="500" height="500" style="border:1px solid black;" id="myCanvas"></canvas>
+	<div class=col-md-3>
+		<canvas width="500" height="500" style="border:1px solid black;" id="myCanvas"></canvas>
+	</div>
+	<div class="col-md-3">
+		<div class="form-group">
+			<input type="text" id="chat" class="form-control"/>
+		</div>
+	</div>
 </div>
 </body>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"

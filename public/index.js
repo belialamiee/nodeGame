@@ -64,6 +64,16 @@
 			
 	});
 	
+	//after typing
+	$("chat").on("focus"),function(){
+			
+			//get keypress enter and then:
+			//send message
+			//empty chat field
+			
+	}
+	
+	
 	//draw canvas
 	function drawCanvas() {
 		updateScores();
@@ -109,10 +119,12 @@
 		
 	//handle key events
     $(document).keydown(function () {
+
+	//disable movement when the user is dead or typing names or chats
+	if(user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))){
         // left, up, right, down
-		if(user.alive){
-		console.log(user.alive);
-        if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
+
+	    if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
             event.preventDefault();
         }
         // left
