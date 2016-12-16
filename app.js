@@ -4,14 +4,15 @@ var port = process.env.PORT || 8080;
 var server = app.listen(port);
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
-app.use(express.static('public'))
+app.use(express.static('public'));
 //serve the web page.
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
 
 
-//todo gracefully handle discconects, save id to cookie so that we don't create new players by hitting refresh, add colours/name tags, slow down restarts, give the players a moment to savour their glory, add in bonus for being last one alive.
+//todo gracefully handle discconects, add colours/name tags,
+//todo slow down restarts, give the players a moment to savour their glory, add in bonus for being last one alive.
 
 var livePlayers = 0;
 var players = [];
