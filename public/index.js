@@ -1,6 +1,20 @@
 	//declarations for resources
 	var background = new Image();
 	background.src = "background.png";
+	
+	var id = Math.random();	
+	var userName = Math.random();
+	
+		if($.cookie('shooterId')){
+			id = $.cookie('shooterId');
+		}
+		$.cookie("shooterId", id, { expires : 1 });	
+		if($.cookie('shooterName')){
+			userName = $.cookie('shooterName');
+		}	
+
+	
+
 
 	var playerLeft = new Image();
 	playerLeft.src = "playerLeft.png"
@@ -30,8 +44,8 @@
 
 	//our user.
     var user = {
-		id: Math.random(),
-		username: Math.random(),
+		id: id,
+		username: userName,
         x: Math.round(Math.random() * 480),
         y: Math.round(Math.random() * 480),
 		direction: "left",
@@ -46,6 +60,7 @@
 	
 	$("#username").on("blur",function(){
 			user.username = $("#username").val();
+			$.cookie("shooterName", user.username, { expires : 1 });	
 			
 	});
 	
