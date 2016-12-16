@@ -164,6 +164,7 @@
 		players.forEach(function(player){
 			if(player.id == user.id){
 				user = player;
+				user.name = userName;
 			}
 		});
 		
