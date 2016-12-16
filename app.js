@@ -16,6 +16,7 @@ app.get('/', function(req, res){
 var livePlayers = 0;
 var players = [];
 var shots = [];
+var messages = [];
 
 //update the location of all the users.
 function updateUsers(user){
@@ -35,7 +36,6 @@ function updateUsers(user){
 		players.push(user);
 		livePlayers++;
 	}
-	io.emit('players', players);
 }
 
 //update the location of all shots
@@ -69,8 +69,9 @@ function updateGame(){
 				io.emit('players',players);
 	});
 	io.emit('shots',shots);
-	
-	//if only one player is left alive then restart the game.
+	io.emit('players', players);
+	io.emit('msg',messages);
+	//if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
 			if(livePlayers <= 1 && players.length > 1){
 				restartGame();
 			}
@@ -85,7 +86,6 @@ function restartGame(){
         player.y = Math.round(Math.random() * 480);
 	});
 	livePlayers = players.length;
-	io.emit('players',players);
 
 }
 
@@ -95,7 +95,6 @@ function updateScore(shot){
 			player.score++;
 		}	
 	});
-	io.emit('players',players);
 }	
 
 //add  a bullet to the shots
@@ -105,8 +104,14 @@ function addToShots(shot){
 
 //handle incoming messages
 io.on('connection',function(socket){
-	socket.on('user',function(msg){
-		updateUsers(msg)
+
+	socket.on('msg',function(msg){
+		messages.push(msg);
+		
+	});
+
+	socket.on('user',function(u){
+		updateUsers(u)
 	});
 	socket.on('disconnect',function(user){
 			console.log("user has disconnected");
