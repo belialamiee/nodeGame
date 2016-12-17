@@ -43,6 +43,8 @@ var players = [];
 //our user.
 var user = {
     id: id,
+    x:0,
+    y:0,
     username: userName,
     direction: "left",
     alive: true
@@ -64,7 +66,7 @@ $('.text').keyup(function (e) {
 $("#username").on("blur", function (e) {
     if (e != "") {
         user.username = $("#username").val();
-        socket.emit('user',user);
+        socket.emit('user', user);
         $.cookie("shooterName", user.username, {expires: 1});
     }
 });
@@ -89,7 +91,6 @@ function drawCanvas() {
     ctx.clearRect(0, 0, 500, 500);
     ctx.drawImage(background, 0, 0, 500, 500);
     if (players) {
-
         players.forEach(function (player) {
             if (player.direction == "left") {
                 image = playerLeft;
@@ -100,11 +101,9 @@ function drawCanvas() {
                 image = deadImage;
             }
             ctx.drawImage(image, player.x, player.y, 32, 32);
-
         });
     }
     if (activeShots) {
-
         activeShots.forEach(function (shot) {
             ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
         });
@@ -121,7 +120,6 @@ function updateScores() {
         }
         html += "</p>"
     });
-
     $(".players").html(html);
 }
 
@@ -129,8 +127,13 @@ function updateScores() {
 //handle key events
 $(document).keydown(function () {
 
+    //todo handle diagonal movement
     //disable movement when the user is dead or typing names or chats
     if (user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))) {
+        //direction and movement
+        var xVelocity = 0;
+        var yVelocity = 0;
+
         // left, up, right, down
         //todo movement should be handled by the server, just send the velocity to the server.
         if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
@@ -139,21 +142,30 @@ $(document).keydown(function () {
         // left
         if (event.which == 37 || event.which == 65) {
             user.direction = "left";
-            user.x -= 2;
+            xVelocity = -1;
+
         }
         // right
         if (event.which == 39 || event.which == 68) {
             user.direction = "right";
-            user.x += 2;
+            xVelocity = 1;
+
         }
         //down
         if (event.which == 38 || event.which == 87) {
-            user.y -= 3;
+            yVelocity = -1;
         }
         // up
         if (event.which == 40 || event.which == 83) {
-            user.y += 2;
+            yVelocity = 1;
         }
+        var movement = {
+            user: user,
+            xVelocity: xVelocity,
+            yVelocity: yVelocity
+        };
+
+        socket.emit('move', movement);
 
         if (event.which == 32) {
             var cFire = new Date();
@@ -202,11 +214,8 @@ socket.on('pew', function () {
 socket.on('msg', function (message) {
     $("#messages").html('');
     for (var i = 0; i < message.length; i++) {
-        console.log();
         $("#messages").append('<p>' + message[i].user + ": " + message[i].msg + '</p>');
     }
-
-
 });
 
 
