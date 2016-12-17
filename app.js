@@ -1,7 +1,8 @@
 var express = require('express');
 var app = express();
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-var server = app.listen(port);
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var server = app.listen(port,server_ip_address);
 var _ = require('lodash');
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
