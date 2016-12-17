@@ -34,6 +34,8 @@ function updateUsers(user){
 
 	if(notFound){
 		user.score = 0;
+		user.x= Math.round(Math.random() * 480),
+		user.y = Math.round(Math.random() * 480),
 		players.push(user);
 		livePlayers++;
 	}

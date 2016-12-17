@@ -44,30 +44,27 @@ var players = [];
 var user = {
     id: id,
     username: userName,
-    x: Math.round(Math.random() * 480),
-    y: Math.round(Math.random() * 480),
     direction: "left",
     alive: true
 
-}
+};
 
 var activeShots = [];
 
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 
-$('.text').bind("enterKey", function (e) {
-    //do stuff here
-});
+
 $('.text').keyup(function (e) {
     if (e.keyCode == 13) {
         $(".text").blur();
     }
 });
 
-$("#username").on("blur", function () {
-    if ($("#username").val() != "") {
+$("#username").on("blur", function (e) {
+    if (e != "") {
         user.username = $("#username").val();
+        socket.emit('user',user);
         $.cookie("shooterName", user.username, {expires: 1});
     }
 });
@@ -204,7 +201,6 @@ socket.on('pew', function () {
 
 socket.on('msg', function (message) {
     $("#messages").html('');
-    console.log(message);
     for (var i = 0; i < message.length; i++) {
         console.log();
         $("#messages").append('<p>' + message[i].user + ": " + message[i].msg + '</p>');
