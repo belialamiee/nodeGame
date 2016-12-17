@@ -135,7 +135,6 @@ $(document).keydown(function () {
         var yVelocity = 0;
 
         // left, up, right, down
-        //todo movement should be handled by the server, just send the velocity to the server.
         if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
             event.preventDefault();
         }
