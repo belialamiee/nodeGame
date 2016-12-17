@@ -10,5 +10,6 @@
         "express": "latest",
         "jade": "latest"
     },
-    "author": "bpratt"
+    "author": "bpratt",
+    "main": "server.js"
 }

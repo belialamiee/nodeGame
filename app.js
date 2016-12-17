@@ -1,9 +1,14 @@
 var express = require('express');
 var app = express();
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+//getting it work on openshift
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-var server = app.listen(port,server_ip_address);
-var _ = require('lodash');
+var server = app.listen(server_port, server_ip_address);
+
+//local environment
+//var port = process.env.PORT || 8080;
+//var server = app.listen(port);
+//var _ = require('lodash');
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
 app.use(express.static('public'));
@@ -15,7 +20,7 @@ app.get('/', function (req, res) {
 
 //todo gracefully handle disconnects, add colours/name tags,
 //todo slow down restarts, give the players a moment to savour their glory, add in bonus for being last one alive.
-
+//todo update to work in environments besides locally
 var livePlayers = 0;
 var players = [];
 var shots = [];
@@ -34,6 +39,7 @@ function updateUsers(user) {
     });
 
     if (notFound) {
+        console.log('a');
         user.score = 0;
         //don't want the player spawning on the edges of the screens
         user.x = Math.round(Math.random() * 460) + 20;
