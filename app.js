@@ -9,6 +9,9 @@ var server = app.listen(server_port, server_ip_address);
 //var port = process.env.PORT || 8080;
 //var server = app.listen(port);
 //var _ = require('lodash');
+
+
+
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
 app.use(express.static('public'));
@@ -26,6 +29,8 @@ var players = [];
 var shots = [];
 var messages = [];
 var speed = 2;
+
+var standardHealth = 5;
 
 //update the location of all the users.
 function updateUsers(user) {
@@ -53,14 +58,14 @@ function updatePlayerLocation(movements) {
     players.forEach(function (player) {
         if (player.id == movements.user.id) {
             if (movements.xVelocity < 0) {
-                player.x -= 2;
+                player.x -= speed;
             } else if (movements.xVelocity > 0) {
-                player.x += 2;
+                player.x += speed;
             }
             if (movements.yVelocity < 0) {
-                player.y -= 2;
+                player.y -= speed;
             } else if (movements.yVelocity > 0) {
-                player.y += 2;
+                player.y += speed;
             }
         }
     });

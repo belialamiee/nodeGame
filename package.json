@@ -11,5 +11,5 @@
         "jade": "latest"
     },
     "author": "bpratt",
-    "main": "server.js"
+    "main": "app.js"
 }
