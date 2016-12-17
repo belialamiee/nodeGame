@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 8080;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server = app.listen(port);
 var _ = require('lodash');
 var io = require('socket.io').listen(server);
