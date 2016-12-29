@@ -1,14 +1,14 @@
 var express = require('express');
 var app = express();
 //getting it work on openshift
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-var server = app.listen(server_port, server_ip_address);
+//var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+//var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+//var server = app.listen(server_port, server_ip_address);
 
 //local environment
-//var port = process.env.PORT || 8080;
-//var server = app.listen(port);
-//var _ = require('lodash');
+var port = process.env.PORT || 8080;
+var server = app.listen(port);
+var _ = require('lodash');
 
 
 
@@ -44,12 +44,14 @@ function updateUsers(user) {
     });
 
     if (notFound) {
-        console.log('a');
         user.score = 0;
-        //don't want the player spawning on the edges of the screens
+        //don't want the player spawning on the edges of the screens, or with more health etc then it should.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
+        user.health = 10;
+        user.alive = true;
         players.push(user);
+        user.direction = 'left';
         livePlayers++;
     }
 }
@@ -92,11 +94,15 @@ function updateGame() {
                 && player.id != shot.user
                 && player.alive
             ) {
-                player.alive = false;
-                livePlayers--;
-                updateScore(shot);
+                player.health--;
                 object.splice(index, 1);
-                console.log(player.username + " was killed");
+                console.log(player.health);
+                if(player.health < 1){
+                    player.alive = false;
+                    livePlayers--;
+                    updateScore(shot);
+                    console.log(player.username + " was killed");
+                }
             }
         });
         io.emit('players', players);
@@ -116,6 +122,7 @@ function restartGame() {
         player.alive = true;
         player.x = Math.round(Math.random() * 480);
         player.y = Math.round(Math.random() * 480);
+        player.health = 10;
     });
     livePlayers = players.length;
 

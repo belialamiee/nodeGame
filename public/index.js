@@ -40,15 +40,15 @@ var socket = io();
 //empty array to hold all the users.
 var players = [];
 
-//our user.
+//our user with defaults.
 var user = {
     id: id,
     x:0,
     y:0,
     username: userName,
     direction: "left",
-    alive: true
-
+    alive: true,
+    health: 10
 };
 
 var activeShots = [];
@@ -101,6 +101,11 @@ function drawCanvas() {
                 image = deadImage;
             }
             ctx.drawImage(image, player.x, player.y, 32, 32);
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff0000';
+            ctx.moveTo(player.x, player.y +32);
+            ctx.lineTo(player.x + (player.health * 3), player.y +32);
+            ctx.stroke();
         });
     }
     if (activeShots) {
