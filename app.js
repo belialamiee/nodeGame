@@ -49,7 +49,7 @@ function updateUsers(user) {
 		//todo make this a class and add in damage multiplier here. then we can add in buffs and character archetypes later on.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
-        user.health = 10;
+        user.health = 4;
         user.alive = true;
         user.direction = 'left';
         players.push(user);
@@ -113,7 +113,7 @@ function updateGame() {
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
 		io.emit('paused',true);
-		setTimeout(function(){ io.emit('paused',true); }, 10000);
+		setTimeout(function(){ io.emit('paused',false); }, 10000);
         restartGame();
     }
 }
@@ -124,7 +124,7 @@ function restartGame() {
         player.alive = true;
         player.x = Math.round(Math.random() * 480);
         player.y = Math.round(Math.random() * 480);
-        player.health = 10;
+        player.health = 4;
     });
     livePlayers = players.length;
 

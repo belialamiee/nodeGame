@@ -45,12 +45,12 @@ var players = [];
 //our user with defaults.
 var user = {
     id: id,
-    x:0,
-    y:0,
+    x: 0,
+    y: 0,
     username: userName,
     direction: "left",
     alive: true,
-    health: 10
+    health: 4
 };
 
 var activeShots = [];
@@ -89,41 +89,49 @@ $("#chat").on("blur", function () {
 
 //draw canvas
 function drawCanvas() {
-	if(!gamePaused){
-		updateScores();
-		ctx.clearRect(0, 0, 500, 500);
-		ctx.drawImage(background, 0, 0, 500, 500);
-		if (players) {
-			players.forEach(function (player) {
-				if (player.direction == "left") {
-					image = playerLeft;
-				} else {
-					image = playerRight;
-				}
-				if (!player.alive) {
-					image = deadImage;
-				}
-				ctx.drawImage(image, player.x, player.y, 32, 32);
-				ctx.beginPath();
-				ctx.strokeStyle = '#ff0000';
-				ctx.moveTo(player.x, player.y +32);
-				ctx.lineTo(player.x + (player.health * 3), player.y +32);
-				ctx.stroke();
-			});
-		}
-		if (activeShots) {
-			activeShots.forEach(function (shot) {
-				ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
-			});
-		}
-	}else{
-	//display endGame message.
-	}
+    if (!gamePaused) {
+        updateScores();
+        ctx.clearRect(0, 0, 500, 500);
+        ctx.drawImage(background, 0, 0, 500, 500);
+        if (players) {
+            players.forEach(function (player) {
+                if (player.direction == "left") {
+                    image = playerLeft;
+                } else {
+                    image = playerRight;
+                }
+                if (!player.alive) {
+                    image = deadImage;
+                }
+                ctx.drawImage(image, player.x, player.y, 32, 32);
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff0000';
+                ctx.lineWidth = 4;
+                ctx.moveTo(player.x, player.y + 32);
+                ctx.lineTo(player.x + (player.health * 8), player.y + 32);
+                ctx.stroke();
+            });
+        }
+        if (activeShots) {
+            activeShots.forEach(function (shot) {
+                ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
+            });
+        }
+    } else {
+        drawGameOverScreen();
+        //display endGame message.
+    }
 }
 
-function drawGameOverScreen(){
-ctx.clearRect(0, 0, 500, 500);
-ctx.fillText("Game Over please wait for the game to resume", 200, 250);
+function drawGameOverScreen() {
+    ctx.clearRect(0, 0, 500, 500);
+    ctx.fillStyle = "#FFF";
+    ctx.drawImage(background, 0, 0, 500, 500);
+    ctx.fillRect(40,120,400,250);
+    ctx.fillStyle = "#000";
+    ctx.font="30px Arial";
+    ctx.fillText("Game Over please wait ",70, 250);
+    ctx.fillText("for the game to resume", 70, 280);
 }
 
 //update the scores
@@ -145,7 +153,7 @@ $(document).keydown(function () {
 
     //todo handle diagonal movement
     //disable movement when the game is paused , the user is dead or the user is typing names/chat messages
-    if ( !gamePaused && user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))) {
+    if (!gamePaused && user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))) {
         //direction and movement
         var xVelocity = 0;
         var yVelocity = 0;
@@ -235,13 +243,9 @@ socket.on('msg', function (message) {
 
 
 //pause the game when told. paused should be boolean
-socket.on('paused',function(paused){
-console.log(paused);
-if(paused == true){
-	gamePaused = true;
-	}else{
-	gamePaused = false;
-	}
+socket.on('paused', function (paused) {
+    console.log(paused);
+    gamePaused = paused == true;
 });
 
 socket.emit('user', user);
