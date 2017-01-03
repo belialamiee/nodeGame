@@ -48,7 +48,7 @@ function updateUsers(user) {
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
-        user.health = 10;
+        user.health = 4;
         user.alive = true;
         players.push(user);
         user.direction = 'left';
@@ -96,7 +96,6 @@ function updateGame() {
             ) {
                 player.health--;
                 object.splice(index, 1);
-                console.log(player.health);
                 if(player.health < 1){
                     player.alive = false;
                     livePlayers--;
@@ -112,7 +111,12 @@ function updateGame() {
     io.emit('msg', messages);
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
-        restartGame();
+		io.emit('paused',true);
+		setTimeout(function(){ 
+				io.emit('paused',false);
+				restartGame();		
+				}, 10000);
+        
     }
 }
 
@@ -135,6 +139,7 @@ function updateScore(shot) {
         }
     });
 }
+
 
 //add  a bullet to the shots
 function addToShots(shot) {
