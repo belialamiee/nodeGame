@@ -46,12 +46,13 @@ function updateUsers(user) {
     if (notFound) {
         user.score = 0;
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
+		//todo make this a class and add in damage multiplier here. then we can add in buffs and character archetypes later on.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
-        user.health = 4;
+        user.health = 10;
         user.alive = true;
-        players.push(user);
         user.direction = 'left';
+        players.push(user);
         livePlayers++;
     }
 }
@@ -112,11 +113,8 @@ function updateGame() {
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
 		io.emit('paused',true);
-		setTimeout(function(){ 
-				io.emit('paused',false);
-				restartGame();		
-				}, 10000);
-        
+		setTimeout(function(){ io.emit('paused',true); }, 10000);
+        restartGame();
     }
 }
 
