@@ -121,6 +121,11 @@ function drawCanvas() {
 	}
 }
 
+function drawGameOverScreen(){
+ctx.clearRect(0, 0, 500, 500);
+ctx.fillText("Game Over please wait for the game to resume", 200, 250);
+}
+
 //update the scores
 function updateScores() {
     var html = "";
