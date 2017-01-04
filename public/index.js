@@ -172,7 +172,7 @@ $(document).keyup(function (key) {
     if (event.which == 32) {
         firing = false;
     }
-    handleKeyPress();
+
 });
 
 $(document).keydown(function (key) {
@@ -191,11 +191,11 @@ $(document).keydown(function (key) {
     if (event.which == 32) {
         firing = true;
     }
-    handleKeyPress();
+
 });
 
 //handle key events
-function handleKeyPress() {
+gameloop = setInterval(function () {
     if (!gamePaused && user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))) {
         //direction and movement
         var xVelocity = 0;
@@ -243,7 +243,7 @@ function handleKeyPress() {
         }
     }
     socket.emit('user', user);
-}
+},25);
 
 //handle incoming information
 socket.on('players', function (users) {
