@@ -85,9 +85,7 @@ $("#chat").on("blur", function () {
         socket.emit('msg', msg);
         $("#chat").val('');
     }
-
 });
-
 
 //draw canvas
 function drawCanvas() {
@@ -120,23 +118,23 @@ function drawCanvas() {
             });
         }
     } else {
-        drawGameOverScreen();
         //display endGame message.
+        drawGameOverScreen();
     }
 }
 
 function drawGameOverScreen() {
-console.log('a');
+    console.log('a');
     ctx.clearRect(0, 0, 500, 500);
     ctx.fillStyle = "#FFF";
     ctx.drawImage(background, 0, 0, 500, 500);
-    ctx.fillRect(40,120,400,250);
+    ctx.fillRect(40, 120, 400, 250);
     ctx.fillStyle = "#000";
-    ctx.font="30px Arial";
-    ctx.fillText("Game Over please wait ",70, 250);
-    ctx.fillText("for the game to resume", 70, 280);
-	ctx.fillText("The winner was " + winner , 70, 310);
-	ctx.fillText("Restarting in " + restartingIn + "seconds" , 70, 340);
+    ctx.font = "30px Arial";
+    ctx.fillText("Game Over please wait ", 70, 180);
+    ctx.fillText("for the game to resume", 70, 210);
+    ctx.fillText("The winner was " + winner, 70, 240);
+    ctx.fillText("Restarting in " + restartingIn + " seconds", 70, 270);
 }
 
 //update the scores
@@ -152,39 +150,72 @@ function updateScores() {
     $(".players").html(html);
 }
 
+var left = false;
+var right = false;
+var up = false;
+var down = false;
+var firing = false;
+
+$(document).keyup(function (key) {
+    if (key.which == 65) {
+        left = false;
+    }
+    if (key.which == 68) {
+        right = false;
+    }
+    if (key.which == 83) {
+        up = false;
+    }
+    if (key.which == 87) {
+        down = false;
+    }
+    if (event.which == 32) {
+        firing = false;
+    }
+    handleKeyPress();
+});
+
+$(document).keydown(function (key) {
+    if (key.which == 65) {
+        left = true;
+    }
+    if (key.which == 68) {
+        right = true;
+    }
+    if (key.which == 83) {
+        up = true;
+    }
+    if (key.which == 87) {
+        down = true;
+    }
+    if (event.which == 32) {
+        firing = true;
+    }
+    handleKeyPress();
+});
 
 //handle key events
-$(document).keydown(function () {
-
-    //todo handle diagonal movement
-    //disable movement when the game is paused , the user is dead or the user is typing names/chat messages
+function handleKeyPress() {
     if (!gamePaused && user.alive && (!$("#chat").is(":focus")) && (!$("#username").is(":focus"))) {
         //direction and movement
         var xVelocity = 0;
         var yVelocity = 0;
 
-        // left, up, right, down
-        if (event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
-            event.preventDefault();
-        }
-        // left
-        if (event.which == 37 || event.which == 65) {
+        if (left) {
             user.direction = "left";
             xVelocity = -1;
-
         }
         // right
-        if (event.which == 39 || event.which == 68) {
+        if (right) {
             user.direction = "right";
             xVelocity = 1;
-
         }
         //down
-        if (event.which == 38 || event.which == 87) {
+        if (down) {
             yVelocity = -1;
         }
         // up
-        if (event.which == 40 || event.which == 83) {
+        if (up) {
             yVelocity = 1;
         }
         var movement = {
@@ -192,10 +223,8 @@ $(document).keydown(function () {
             xVelocity: xVelocity,
             yVelocity: yVelocity
         };
-
         socket.emit('move', movement);
-
-        if (event.which == 32) {
+        if (firing) {
             var cFire = new Date();
             if ((cFire - lastFire) / 1000 > 1 / fireRate) {
                 var shotOffset = 0;
@@ -214,7 +243,7 @@ $(document).keydown(function () {
         }
     }
     socket.emit('user', user);
-});
+}
 
 //handle incoming information
 socket.on('players', function (users) {
@@ -249,14 +278,14 @@ socket.on('msg', function (message) {
 
 //pause the game when told. paused should be boolean
 socket.on('paused', function (paused) {
-	drawCanvas();
+    drawCanvas();
     console.log(paused);
     gamePaused = paused.paused == true;
-	restartingIn = paused.remainingTime;
-	if(paused.winner){
-		winner = paused.winner;
+    restartingIn = paused.remainingTime;
+    if (paused.winner) {
+        winner = paused.winner;
 
-	}
+    }
 });
 
 socket.emit('user', user);

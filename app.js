@@ -79,6 +79,16 @@ function updatePlayerLocation(movements) {
     });
 }
 
+function getWinner(){
+    var winner = "";
+    players.forEach(function(player){
+       if(player.alive){
+           winner =  player.username;
+       }
+    });
+    return winner;
+}
+
 //update the location of all shots
 function updateGame() {
     shots.forEach(function (shot, index, object) {
@@ -106,6 +116,7 @@ function updateGame() {
                     player.alive = false;
                     livePlayers--;
                     updateScore(shot);
+                    shots = [];
                     console.log(player.username + " was killed");
                 }
             }
@@ -119,13 +130,14 @@ function updateGame() {
     if (livePlayers <= 1 && players.length > 1) {
 		clearInterval(gameLoop);
 		pauseData.paused = true;
+        pauseData.winner = getWinner();
 		//get the last living players name
 		//create an object of the players name, the time remaining before refresh and the fact that the game is paused.
 		io.emit('paused',pauseData);
 		
 		var pauseTime = setInterval(function(){ 
 			pauseData.remainingTime--;
-			console.log(pauseData.remainingTime);
+
 				if(pauseData.remainingTime == 0){
 					pauseData.remainingTime = 10;
 					pauseData.paused = false;
