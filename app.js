@@ -11,11 +11,11 @@ var server = app.listen(port);
 var _ = require('lodash');
 
 var pauseData = {
-			paused: true,
-			winner: "Ben",
-			remainingTime: 10	
-		};
-		
+    paused: true,
+    winner: "Ben",
+    remainingTime: 10
+};
+
 
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
@@ -27,7 +27,6 @@ app.get('/', function (req, res) {
 
 
 //todo gracefully handle disconnects, add colours/name tags,
-//todo slow down restarts, give the players a moment to savour their glory, add in bonus for being last one alive.
 //todo update to work in environments besides locally
 var livePlayers = 0;
 var players = [];
@@ -35,7 +34,46 @@ var shots = [];
 var messages = [];
 var speed = 2;
 
-var standardHealth = 5;
+//archetypes
+//standard shooter
+var standardArchetype = {
+    health: 4,
+    damage: 1,
+    shootSpeed: 1,
+    shootRange: null
+};
+
+//high damage but short range
+var shotgunArchetype = {
+    health: 4,
+    damage: 3,
+    shootSpeed: 1.5,
+    shootRange: 100
+};
+
+//machine gun fast shots but low damage per hit
+var pewpewArchetype = {
+    health: 4,
+    damage: 0.5,
+    shootSpeed: 2,
+    shootRange: 100
+};
+
+//close range, one hit kills but needs to be right on top of them
+var swordArchetype = {
+    health: 8,
+    damage: 10,
+    shootSpeed: 0.5,
+    shootRange: 16
+};
+
+//todo map the archetype to the user.
+//todo implement the changes for each archetypes to shots
+
+function addArcheType(player) {
+    //assign the character archetype data to the player.
+
+}
 
 //update the location of all the users.
 function updateUsers(user) {
@@ -50,8 +88,8 @@ function updateUsers(user) {
 
     if (notFound) {
         user.score = 0;
+        //todo make this a class and add in damage multiplier here. then we can add in buffs and character archetypes later on.
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
-		//todo make this a class and add in damage multiplier here. then we can add in buffs and character archetypes later on.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
         user.health = 4;
@@ -79,25 +117,25 @@ function updatePlayerLocation(movements) {
     });
 }
 
-function getWinner(){
+function getWinner() {
     var winner = "";
-    players.forEach(function(player){
-       if(player.alive){
-           winner =  player.username;
-       }
+    players.forEach(function (player) {
+        if (player.alive) {
+            winner = player.username;
+        }
     });
     return winner;
 }
 
 //update the location of all shots
 function updateGame() {
+    //todo implement the different stats for shots, for instance range and damage.
     shots.forEach(function (shot, index, object) {
         if (shot.velocity == "left") {
             shot.x--;
         } else {
             shot.x++;
         }
-
         if (shot.x > 500 || shot.x < 0 || shot.y > 500 || shot.y < 0) {
             object.splice(index, 1);
         }
@@ -112,7 +150,7 @@ function updateGame() {
             ) {
                 player.health--;
                 object.splice(index, 1);
-                if(player.health < 1){
+                if (player.health < 1) {
                     player.alive = false;
                     livePlayers--;
                     updateScore(shot);
@@ -128,25 +166,23 @@ function updateGame() {
     io.emit('msg', messages);
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
-		clearInterval(gameLoop);
-		pauseData.paused = true;
+        clearInterval(gameLoop);
+        pauseData.paused = true;
         pauseData.winner = getWinner();
-		//get the last living players name
-		//create an object of the players name, the time remaining before refresh and the fact that the game is paused.
-		io.emit('paused',pauseData);
-		
-		var pauseTime = setInterval(function(){ 
-			pauseData.remainingTime--;
-
-				if(pauseData.remainingTime == 0){
-					pauseData.remainingTime = 10;
-					pauseData.paused = false;
-					clearInterval(pauseTime);
-					restartGame();
-					gameLoop = setInterval(updateGame, 10);
-				}
-				io.emit('paused',pauseData);
-		}, 1000);
+        //get the last living players name
+        //create an object of the players name, the time remaining before refresh and the fact that the game is paused.
+        io.emit('paused', pauseData);
+        var pauseTime = setInterval(function () {
+            pauseData.remainingTime--;
+            if (pauseData.remainingTime == 0) {
+                pauseData.remainingTime = 10;
+                pauseData.paused = false;
+                clearInterval(pauseTime);
+                restartGame();
+                gameLoop = setInterval(updateGame, 10);
+            }
+            io.emit('paused', pauseData);
+        }, 1000);
     }
 }
 
@@ -159,7 +195,6 @@ function restartGame() {
         player.health = 4;
     });
     livePlayers = players.length;
-
 }
 
 function updateScore(shot) {
@@ -169,7 +204,6 @@ function updateScore(shot) {
         }
     });
 }
-
 
 //add  a bullet to the shots
 function addToShots(shot) {
@@ -181,12 +215,12 @@ io.on('connection', function (socket) {
 
     socket.on('msg', function (msg) {
         messages.push(msg);
-
     });
 
     socket.on('user', function (u) {
         updateUsers(u);
     });
+
     socket.on('disconnect', function (user) {
         console.log("user has disconnected");
     });
@@ -194,15 +228,10 @@ io.on('connection', function (socket) {
     socket.on('shot', function (shot) {
         addToShots(shot);
         io.emit('pew', null);
-
     });
 
     socket.on('move', function (e) {
         updatePlayerLocation(e);
-        //update the users x and y coordinates in proportion to their x and y velocity
-        // x -1 means head 2 steps left, 0 means no horizontal movement and 1 means 2 steps left
-        // y -1 means head 2 steps up, 0 means no vertical movement and 1 means 2 steps down
-
     });
 });
 

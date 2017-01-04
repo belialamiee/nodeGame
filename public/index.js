@@ -124,7 +124,6 @@ function drawCanvas() {
 }
 
 function drawGameOverScreen() {
-    console.log('a');
     ctx.clearRect(0, 0, 500, 500);
     ctx.fillStyle = "#FFF";
     ctx.drawImage(background, 0, 0, 500, 500);
@@ -172,7 +171,6 @@ $(document).keyup(function (key) {
     if (event.which == 32) {
         firing = false;
     }
-
 });
 
 $(document).keydown(function (key) {
@@ -191,7 +189,6 @@ $(document).keydown(function (key) {
     if (event.which == 32) {
         firing = true;
     }
-
 });
 
 //handle key events
@@ -254,7 +251,6 @@ socket.on('players', function (users) {
             user.name = userName;
         }
     });
-
     drawCanvas();
 });
 socket.on('shots', function (shots) {
@@ -267,7 +263,6 @@ socket.on('pew', function () {
     pew.play();
 });
 
-
 socket.on('msg', function (message) {
     $("#messages").html('');
     for (var i = 0; i < message.length; i++) {
@@ -279,7 +274,6 @@ socket.on('msg', function (message) {
 //pause the game when told. paused should be boolean
 socket.on('paused', function (paused) {
     drawCanvas();
-    console.log(paused);
     gamePaused = paused.paused == true;
     restartingIn = paused.remainingTime;
     if (paused.winner) {
