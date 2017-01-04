@@ -10,7 +10,12 @@ var port = process.env.PORT || 8080;
 var server = app.listen(port);
 var _ = require('lodash');
 
-
+var pauseData = {
+			paused: true,
+			winner: "Ben",
+			remainingTime: 10	
+		};
+		
 
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
@@ -112,21 +117,24 @@ function updateGame() {
     io.emit('msg', messages);
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
-		var pauseData = {
-			paused: true,
-			winner: "Ben",
-			remainingTime: 10	
-		};
+		clearInterval(gameLoop);
+		pauseData.paused = true;
 		//get the last living players name
 		//create an object of the players name, the time remaining before refresh and the fact that the game is paused.
 		io.emit('paused',pauseData);
-		pauseData.paused = false;
-		for(var i = 0; i < 10; i++){
-		console.log(i);
-			pauseData.remainingTime--; 
-			setTimeout(function(){ io.emit('paused',pauseData); }, 10000);
-        }
-		restartGame();
+		
+		var pauseTime = setInterval(function(){ 
+			pauseData.remainingTime--;
+			console.log(pauseData.remainingTime);
+				if(pauseData.remainingTime == 0){
+					pauseData.remainingTime = 10;
+					pauseData.paused = false;
+					clearInterval(pauseTime);
+					restartGame();
+					gameLoop = setInterval(updateGame, 10);
+				}
+				io.emit('paused',pauseData);
+		}, 1000);
     }
 }
 
@@ -186,4 +194,4 @@ io.on('connection', function (socket) {
     });
 });
 
-setInterval(updateGame, 10);
+var gameLoop = setInterval(updateGame, 10);

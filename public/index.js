@@ -126,6 +126,7 @@ function drawCanvas() {
 }
 
 function drawGameOverScreen() {
+console.log('a');
     ctx.clearRect(0, 0, 500, 500);
     ctx.fillStyle = "#FFF";
     ctx.drawImage(background, 0, 0, 500, 500);
@@ -248,6 +249,7 @@ socket.on('msg', function (message) {
 
 //pause the game when told. paused should be boolean
 socket.on('paused', function (paused) {
+	drawCanvas();
     console.log(paused);
     gamePaused = paused.paused == true;
 	restartingIn = paused.remainingTime;
