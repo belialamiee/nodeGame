@@ -7,6 +7,8 @@ var userName = Math.random();
 if ($.cookie('shooterId')) {
     id = $.cookie('shooterId');
 }
+var winner = "";
+var restartingIn = 10;
 $.cookie("shooterId", id, {expires: 1});
 if ($.cookie('shooterName')) {
     userName = $.cookie('shooterName');
@@ -132,6 +134,8 @@ function drawGameOverScreen() {
     ctx.font="30px Arial";
     ctx.fillText("Game Over please wait ",70, 250);
     ctx.fillText("for the game to resume", 70, 280);
+	ctx.fillText("The winner was " + winner , 70, 310);
+	ctx.fillText("Restarting in " + restartingIn + "seconds" , 70, 340);
 }
 
 //update the scores
@@ -245,7 +249,12 @@ socket.on('msg', function (message) {
 //pause the game when told. paused should be boolean
 socket.on('paused', function (paused) {
     console.log(paused);
-    gamePaused = paused == true;
+    gamePaused = paused.paused == true;
+	restartingIn = paused.remainingTime;
+	if(paused.winner){
+		winner = paused.winner;
+
+	}
 });
 
 socket.emit('user', user);

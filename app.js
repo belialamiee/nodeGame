@@ -112,9 +112,21 @@ function updateGame() {
     io.emit('msg', messages);
     //if only one player is left alive then restart the game. need to display a results screen for 1 min before restarting
     if (livePlayers <= 1 && players.length > 1) {
-		io.emit('paused',true);
-		setTimeout(function(){ io.emit('paused',false); }, 10000);
-        restartGame();
+		var pauseData = {
+			paused: true,
+			winner: "Ben",
+			remainingTime: 10	
+		};
+		//get the last living players name
+		//create an object of the players name, the time remaining before refresh and the fact that the game is paused.
+		io.emit('paused',pauseData);
+		pauseData.paused = false;
+		for(var i = 0; i < 10; i++){
+		console.log(i);
+			pauseData.remainingTime--; 
+			setTimeout(function(){ io.emit('paused',pauseData); }, 10000);
+        }
+		restartGame();
     }
 }
 
