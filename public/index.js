@@ -3,7 +3,10 @@ var background = new Image();
 background.src = "background.png";
 var gamePaused = false;
 var id = Math.random();
-var userName = Math.random();
+//empty array to hold all the users.
+var players = [];
+
+var userName = "Player" + players.length;
 if ($.cookie('shooterId')) {
     id = $.cookie('shooterId');
 }
@@ -31,6 +34,7 @@ var deadImage = new Image();
 deadImage.src = "blood.png";
 
 var pew = new Audio('pew.mp3');
+var splat = new Audio('splat.wav');
 
 var backgroundMusic = new Audio('yackety.mp3');
 
@@ -41,8 +45,7 @@ var lastFire = new Date();
 
 var socket = io();
 
-//empty array to hold all the users.
-var players = [];
+
 
 //our user with defaults.
 var user = {
@@ -262,6 +265,13 @@ socket.on('pew', function () {
     pew.currentTime = 0;
     pew.play();
 });
+
+socket.on('splat', function () {
+console.log('splat');
+    splat.currentTime = 0;
+    splat.play();
+});
+
 
 socket.on('msg', function (message) {
     $("#messages").html('');

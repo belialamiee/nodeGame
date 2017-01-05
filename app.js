@@ -148,6 +148,7 @@ function updateGame() {
                 && player.id != shot.user
                 && player.alive
             ) {
+				io.emit('splat', null);
                 player.health--;
                 object.splice(index, 1);
                 if (player.health < 1) {
@@ -222,7 +223,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function (user) {
-        console.log("user has disconnected");
+        console.log("user has disconnected " + user );
     });
 
     socket.on('shot', function (shot) {
