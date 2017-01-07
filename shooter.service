@@ -1,0 +1,18 @@
+[Unit]
+Description=Start node Server for shooter
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/nodeapp.pid
+WorkingDirectory=/var/www/nodeGame/
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/node app.js
+Restart=always
+Environment='NODE_ENV=production'
+StandardOutput=null
+StandardError=null
+SyslogIdentifier=ghost
+[Install]
+WantedBy=multi-user.target
