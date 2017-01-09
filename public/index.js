@@ -95,7 +95,7 @@ function drawCanvas() {
         updateScores();
         ctx.clearRect(0, 0, 800, 600);
 		
-        ctx.drawImage(background, 0, 0, 800, 600);
+        ctx.drawImage(background, 100, 0, 800, 600);
         if (players) {
             players.forEach(function (player) {
                 if (player.direction == "left") {
@@ -107,12 +107,12 @@ function drawCanvas() {
                     image = deadImage;
                 }
 				ctx.fillStyle = "#FFF";
-				ctx.fillRect(10,10,100,30);
+				ctx.fillRect(0,10,100,30);
 				ctx.fillStyle = "#000";
 				ctx.lineWidth = 1;
-				ctx.strokeRect(10,10,100,30);
+				ctx.strokeRect(0,10,100,30);
 				ctx.font = "15px Arial";
-				ctx.fillText('Change Class',15,30)
+				ctx.fillText('Change Class',5,30)
 				
                 ctx.drawImage(image, player.x, player.y, 32, 32);
                 ctx.beginPath();
@@ -137,6 +137,11 @@ function drawCanvas() {
 //handles changing the class
 function drawChangeClass(){
 
+}
+
+//draw the scores onto the screen itself.
+function drawScores(){
+	
 }
 
 function drawGameOverScreen() {

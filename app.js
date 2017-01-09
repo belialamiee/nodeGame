@@ -104,11 +104,11 @@ function updatePlayerLocation(movements) {
     players.forEach(function (player) {
         if (player.id == movements.user.id) {
             if (movements.xVelocity < 0) {
-				if(player.x > 16){
+				if(player.x > 100){
 					player.x -= speed;
 				}
             } else if (movements.xVelocity > 0) {
-				if(player.x < 784){
+				if(player.x < 767){
 					player.x += speed;
 				}
             }
@@ -117,7 +117,7 @@ function updatePlayerLocation(movements) {
 					player.y -= speed;
 				}
             } else if (movements.yVelocity > 0) {
-				if(player.y < 784){
+				if(player.y < 567){
 				   player.y += speed;
 				}             
             }
