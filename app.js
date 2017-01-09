@@ -47,7 +47,7 @@ var standardArchetype = {
 var shotgunArchetype = {
     health: 4,
     damage: 3,
-    shootSpeed: 1.5,
+    shootSpeed: 1,
     shootRange: 100
 };
 
@@ -67,12 +67,36 @@ var swordArchetype = {
     shootRange: 16
 };
 
-//todo map the archetype to the user.
-//todo implement the changes for each archetypes to shots
+//given the id return the character archetype
+function fetchArcheType(charClass) {
+    //fetch the archetype given the id
+	switch(charClass){
+			case 1:
+				archetype = standardArchetype;
+				break;
+			case 2:
+				archetype = shotgunArchetype;
+				break;
+			case 3:
+				archetype = pewpewArchetype;
+				break;
+			case 4:
+				archetype = swordArchetype;
+				break;
+		}
+		return archetype;
+}
 
-function addArcheType(player) {
-    //assign the character archetype data to the player.
+//change the player class. we kill the player so that they cannot cheat the system.
+function changeClass(user){
+	 players.forEach(function (player) {
+        if (player.id == user.id) {
+            player.alive = false;
+            player.archetype = addArcheType(user.charClass);
+            livePlayers--;
 
+        }
+    });
 }
 
 //update the location of all the users.
@@ -88,13 +112,13 @@ function updateUsers(user) {
 
     if (notFound) {
         user.score = 0;
-        //todo make this a class and add in damage multiplier here. then we can add in buffs and character archetypes later on.
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
         user.health = 4;
         user.alive = true;
         user.direction = 'left';
+		user.archetype = fetchArcheType(user.charClass);
         players.push(user);
         livePlayers++;
     }
@@ -157,7 +181,7 @@ function updateGame() {
                 && player.alive
             ) {
 				io.emit('splat', null);
-                player.health--;
+                player.health = player.health - shot.user.archetype.damage;
                 object.splice(index, 1);
                 if (player.health < 1) {
                     player.alive = false;
@@ -216,7 +240,15 @@ function updateScore(shot) {
 
 //add  a bullet to the shots
 function addToShots(shot) {
-    shots.push(shot);
+	//assign the user stats to the shot
+	var shotOffset = 0;
+    if (shot.user.direction != "left") {
+            shotOffset = 25
+    }
+	shot.x = shot.user.x + shotOffset;
+	shot.y = shot.user.y;
+	velocity: shot.user.direction
+	shots.push(shot);
 }
 
 //handle incoming messages
@@ -225,6 +257,10 @@ io.on('connection', function (socket) {
     socket.on('msg', function (msg) {
         messages.push(msg);
     });
+	
+	socket.on('classChange',function(user){
+			changeClass(user);
+	});
 
     socket.on('user', function (u) {
         updateUsers(u);

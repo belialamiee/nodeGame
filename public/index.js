@@ -7,7 +7,7 @@ var id = Math.random();
 var players = [];
 var changingClass = false;
 
-var userName = "Player" + players.length;
+var userName = "Player";
 if ($.cookie('shooterId')) {
     id = $.cookie('shooterId');
 }
@@ -17,7 +17,6 @@ $.cookie("shooterId", id, {expires: 1});
 if ($.cookie('shooterName')) {
     userName = $.cookie('shooterName');
     $("#username").val(userName);
-
 }
 
 //todo move the player information into the canvas and we can add  a health bar to the name display.
@@ -54,7 +53,8 @@ var user = {
     username: userName,
     direction: "left",
     alive: true,
-    health: 4
+    health: 4,
+	charClass: 1
 };
 
 var activeShots = [];
@@ -106,14 +106,16 @@ function drawCanvas() {
                 if (!player.alive) {
                     image = deadImage;
                 }
+				//draw the change class button
 				ctx.fillStyle = "#FFF";
-				ctx.fillRect(0,10,100,30);
+				ctx.fillRect(5,10,90,30);
 				ctx.fillStyle = "#000";
 				ctx.lineWidth = 1;
-				ctx.strokeRect(0,10,100,30);
-				ctx.font = "15px Arial";
-				ctx.fillText('Change Class',5,30)
+				ctx.strokeRect(5,10,90,30);
+				ctx.font = "12px Arial";
+				ctx.fillText('Change Class',10,30)
 				
+				//draw the rest of the game screen
                 ctx.drawImage(image, player.x, player.y, 32, 32);
                 ctx.beginPath();
                 ctx.strokeStyle = '#ff0000';
@@ -190,7 +192,7 @@ $(document).keyup(function (key) {
         down = false;
     }
     if (event.which == 32) {
-        firing = false;
+	    firing = false;
     }
 });
 
@@ -208,6 +210,7 @@ $(document).keydown(function (key) {
         down = true;
     }
     if (event.which == 32) {
+	key.preventDefault();
         firing = true;
     }
 });
@@ -249,12 +252,8 @@ gameloop = setInterval(function () {
                 if (user.direction != "left") {
                     shotOffset = 25
                 }
-                var shot = {
-                    user: user.id,
-                    x: user.x + shotOffset,
-                    y: (user.y + 12),
-                    velocity: user.direction
-                };
+				//todo just send the user and have the app do this work
+                var shot = {user:user};
                 socket.emit('shot', shot);
                 lastFire = cFire;
             }
@@ -285,7 +284,6 @@ socket.on('pew', function () {
 });
 
 socket.on('splat', function () {
-console.log('splat');
     splat.currentTime = 0;
     splat.play();
 });
