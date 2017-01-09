@@ -104,14 +104,22 @@ function updatePlayerLocation(movements) {
     players.forEach(function (player) {
         if (player.id == movements.user.id) {
             if (movements.xVelocity < 0) {
-                player.x -= speed;
+				if(player.x > 16){
+					player.x -= speed;
+				}
             } else if (movements.xVelocity > 0) {
-                player.x += speed;
+				if(player.x < 784){
+					player.x += speed;
+				}
             }
             if (movements.yVelocity < 0) {
-                player.y -= speed;
+				if(player.y > 0){
+					player.y -= speed;
+				}
             } else if (movements.yVelocity > 0) {
-                player.y += speed;
+				if(player.y < 784){
+				   player.y += speed;
+				}             
             }
         }
     });
@@ -136,7 +144,7 @@ function updateGame() {
         } else {
             shot.x++;
         }
-        if (shot.x > 500 || shot.x < 0 || shot.y > 500 || shot.y < 0) {
+        if (shot.x > 800 || shot.x < 0 || shot.y > 600 || shot.y < 0) {
             object.splice(index, 1);
         }
         players.forEach(function (player) {

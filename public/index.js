@@ -5,6 +5,7 @@ var gamePaused = false;
 var id = Math.random();
 //empty array to hold all the users.
 var players = [];
+var changingClass = false;
 
 var userName = "Player" + players.length;
 if ($.cookie('shooterId')) {
@@ -45,8 +46,6 @@ var lastFire = new Date();
 
 var socket = io();
 
-
-
 //our user with defaults.
 var user = {
     id: id,
@@ -59,10 +58,8 @@ var user = {
 };
 
 var activeShots = [];
-
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
-
 
 $('.text').keyup(function (e) {
     if (e.keyCode == 13) {
@@ -90,12 +87,15 @@ $("#chat").on("blur", function () {
     }
 });
 
+
+
 //draw canvas
 function drawCanvas() {
-    if (!gamePaused) {
+    if (!gamePaused && !changingClass) {
         updateScores();
-        ctx.clearRect(0, 0, 500, 500);
-        ctx.drawImage(background, 0, 0, 500, 500);
+        ctx.clearRect(0, 0, 800, 600);
+		
+        ctx.drawImage(background, 0, 0, 800, 600);
         if (players) {
             players.forEach(function (player) {
                 if (player.direction == "left") {
@@ -106,6 +106,14 @@ function drawCanvas() {
                 if (!player.alive) {
                     image = deadImage;
                 }
+				ctx.fillStyle = "#FFF";
+				ctx.fillRect(10,10,100,30);
+				ctx.fillStyle = "#000";
+				ctx.lineWidth = 1;
+				ctx.strokeRect(10,10,100,30);
+				ctx.font = "15px Arial";
+				ctx.fillText('Change Class',15,30)
+				
                 ctx.drawImage(image, player.x, player.y, 32, 32);
                 ctx.beginPath();
                 ctx.strokeStyle = '#ff0000';
@@ -120,16 +128,21 @@ function drawCanvas() {
                 ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
             });
         }
-    } else {
+    } else{
         //display endGame message.
         drawGameOverScreen();
     }
 }
 
+//handles changing the class
+function drawChangeClass(){
+
+}
+
 function drawGameOverScreen() {
-    ctx.clearRect(0, 0, 500, 500);
+    ctx.clearRect(0, 0, 800, 600);
     ctx.fillStyle = "#FFF";
-    ctx.drawImage(background, 0, 0, 500, 500);
+    ctx.drawImage(background, 0, 0, 800, 600);
     ctx.fillRect(40, 120, 400, 250);
     ctx.fillStyle = "#000";
     ctx.font = "30px Arial";

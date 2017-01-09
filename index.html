@@ -27,28 +27,23 @@
 </head>
 <body>
 <div class="col-md-12">
-    <div class="col-md-3">
+    <div class="col-md-7">
         <div class="form-group">
+            <canvas width="800" height="600" style="border:1px solid black;" id="myCanvas"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+	<div class="form-group">
             <label class="col-md-3">
                 Name
             </label>
-
             <div class="col-md-9">
                 <div class="form-group">
                     <input class="form-control text" id="username"/>
                 </div>
-                <div class="form-group">
-                    <div class="players scrollable"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-5">
-        <div class="form-group">
-            <canvas width="500" height="500" style="border:1px solid black;" id="myCanvas"></canvas>
-        </div>
-    </div>
-    <div class="col-md-4">
+			</div>
+	</div>
+				
         <div class="form-group">
             <input type="text" id="chat" class="form-control text"/>
 
