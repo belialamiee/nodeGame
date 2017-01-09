@@ -54,7 +54,7 @@ var user = {
     direction: "left",
     alive: true,
     health: 4,
-	charClass: 1
+	charClass: 2
 };
 
 var activeShots = [];

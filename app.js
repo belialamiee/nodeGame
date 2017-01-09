@@ -40,7 +40,8 @@ var standardArchetype = {
     health: 4,
     damage: 1,
     shootSpeed: 1,
-    shootRange: null
+    shootRange: null,
+	speed: 2
 };
 
 //high damage but short range
@@ -48,7 +49,8 @@ var shotgunArchetype = {
     health: 4,
     damage: 3,
     shootSpeed: 1,
-    shootRange: 100
+    shootRange: 100,
+	speed: 2
 };
 
 //machine gun fast shots but low damage per hit
@@ -56,7 +58,8 @@ var pewpewArchetype = {
     health: 4,
     damage: 0.5,
     shootSpeed: 2,
-    shootRange: 100
+    shootRange: 100,
+	speed: 2
 };
 
 //close range, one hit kills but needs to be right on top of them
@@ -64,7 +67,8 @@ var swordArchetype = {
     health: 8,
     damage: 10,
     shootSpeed: 0.5,
-    shootRange: 16
+    shootRange: 16,
+	speed: 3
 };
 
 //given the id return the character archetype
@@ -82,6 +86,9 @@ function fetchArcheType(charClass) {
 				break;
 			case 4:
 				archetype = swordArchetype;
+				break;
+			default:
+				archetype = standardArchetype;
 				break;
 		}
 		return archetype;
@@ -115,11 +122,11 @@ function updateUsers(user) {
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
         user.x = Math.round(Math.random() * 460) + 20;
         user.y = Math.round(Math.random() * 460) + 20;
-        user.health = 4;
         user.alive = true;
         user.direction = 'left';
 		user.archetype = fetchArcheType(user.charClass);
-        players.push(user);
+        user.health = user.archetype.health;
+		players.push(user);
         livePlayers++;
     }
 }
@@ -129,20 +136,20 @@ function updatePlayerLocation(movements) {
         if (player.id == movements.user.id) {
             if (movements.xVelocity < 0) {
 				if(player.x > 100){
-					player.x -= speed;
+					player.x -= player.archetype.speed;
 				}
             } else if (movements.xVelocity > 0) {
 				if(player.x < 767){
-					player.x += speed;
+					player.x += player.archetype.speed;
 				}
             }
             if (movements.yVelocity < 0) {
 				if(player.y > 0){
-					player.y -= speed;
+					player.y -= player.archetype.speed;
 				}
             } else if (movements.yVelocity > 0) {
 				if(player.y < 567){
-				   player.y += speed;
+				   player.y += player.archetype.speed;
 				}             
             }
         }
@@ -163,7 +170,7 @@ function getWinner() {
 function updateGame() {
     //todo implement the different stats for shots, for instance range and damage.
     shots.forEach(function (shot, index, object) {
-        if (shot.velocity == "left") {
+	    if (shot.velocity == "left") {
             shot.x--;
         } else {
             shot.x++;
@@ -247,7 +254,7 @@ function addToShots(shot) {
     }
 	shot.x = shot.user.x + shotOffset;
 	shot.y = shot.user.y;
-	velocity: shot.user.direction
+	shot.velocity = shot.user.direction;
 	shots.push(shot);
 }
 
