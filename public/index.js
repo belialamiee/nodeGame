@@ -63,12 +63,14 @@ c.addEventListener('click',function(e){
 });
 var ctx = c.getContext("2d");
 
+//enter works on chat and username updates
 $('.text').keyup(function (e) {
     if (e.keyCode == 13) {
         $(".text").blur();
     }
 });
 
+//after changing username
 $("#username").on("blur", function (e) {
     if (e != "") {
         user.username = $("#username").val();
@@ -77,7 +79,7 @@ $("#username").on("blur", function (e) {
     }
 });
 
-//after typing
+//after typing in chat
 $("#chat").on("blur", function () {
     if ($("#chat").val() != "") {
         var msg = {
@@ -171,15 +173,21 @@ function drawGameOverScreen() {
 
 //update the scores
 function updateScores() {
-    var html = "";
+    var x = 5;
+    var y = 60;
     players.forEach(function (player) {
-        html += "<p>" + player.username + ": " + player.score;
-        if (player.alive == false) {
-            html += " : DEAD";
-        }
-        html += "</p>"
+        ctx.fillText(player.username,x,y);
+        y = y + 20;
+        ctx.fillText(player.score,x,y);
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 4;
+        y = y + 10;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + (player.health * 16), y);
+        ctx.stroke();
+        y = y + 20;
     });
-    $(".players").html(html);
 }
 
 var left = false;
