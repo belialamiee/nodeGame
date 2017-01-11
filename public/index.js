@@ -19,8 +19,6 @@ if ($.cookie('shooterName')) {
     $("#username").val(userName);
 }
 
-//todo move the player information into the canvas and we can add  a health bar to the name display.
-
 var playerLeft = new Image();
 playerLeft.src = "playerLeft.png";
 
@@ -39,9 +37,6 @@ var splat = new Audio('splat.wav');
 var backgroundMusic = new Audio('yackety.mp3');
 
 var image = playerLeft;
-
-var lastFire = new Date();
-
 var socket = io();
 
 //our user with defaults.
@@ -59,6 +54,13 @@ var user = {
 
 var activeShots = [];
 var c = document.getElementById("myCanvas");
+
+c.addEventListener('click',function(e){
+    if(e.offsetX < 90 && e.offsetX > 5 && e.offsetY > 10 && e.offsetY < 30 ){
+        //handle change class
+    }
+
+});
 var ctx = c.getContext("2d");
 
 $('.text').keyup(function (e) {
@@ -134,7 +136,12 @@ function drawPlayers() {
 
 //handles changing the class
 function drawChangeClass() {
-
+    ctx.clearRect(0, 0, 800, 600);
+    //split into 4 sections
+    ctx.strokeRect(0,0,400,300);
+    ctx.strokeRect(0,0,400,300);
+    ctx.strokeRect(401,301,800,600);
+    ctx.strokeRect(401,301,800,600);
 }
 
 //draw the scores onto the screen itself.
@@ -224,21 +231,17 @@ gameloop = setInterval(function () {
         //direction and movement
         var xVelocity = 0;
         var yVelocity = 0;
-
         if (left) {
             user.direction = "left";
             xVelocity = -1;
         }
-        // right
         if (right) {
             user.direction = "right";
             xVelocity = 1;
         }
-        //down
         if (down) {
             yVelocity = -1;
         }
-        // up
         if (up) {
             yVelocity = 1;
         }
@@ -249,24 +252,10 @@ gameloop = setInterval(function () {
         };
         socket.emit('move', movement);
         if (firing) {
-            var cFire = new Date();
-            if ((cFire - lastFire) / 1000 > 1 / user.archetype.fireRate) {
-                var shotOffset = 0;
-                if (user.direction != "left") {
-                    shotOffset = 25
-                }
-                //todo just send the user and have the app do this work
-                var shot = {user: user};
-                socket.emit('shot', shot);
-                lastFire = cFire;
-                /**
-                 var shot = {user:user};
-                 socket.emit('shot', shot);
-                 **/
-            }
+            var shot = {user: user};
+            socket.emit('shot', shot);
         }
     }
-
     socket.emit('user', user);
 }, 25);
 
@@ -281,6 +270,7 @@ socket.on('players', function (users) {
     });
     drawCanvas();
 });
+
 socket.on('shots', function (shots) {
     activeShots = shots;
     drawCanvas();
@@ -296,14 +286,12 @@ socket.on('splat', function () {
     splat.play();
 });
 
-
 socket.on('msg', function (message) {
     $("#messages").html('');
     for (var i = 0; i < message.length; i++) {
         $("#messages").append('<p>' + message[i].user + ": " + message[i].msg + '</p>');
     }
 });
-
 
 //pause the game when told. paused should be boolean
 socket.on('paused', function (paused) {

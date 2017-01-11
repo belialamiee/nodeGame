@@ -40,7 +40,7 @@ var standardArchetype = {
     damage: 1,
     fireRate: 2,
     shootRange: 1000,
-	speed: 2
+    speed: 2
 };
 
 //high damage but short range
@@ -49,7 +49,7 @@ var shotgunArchetype = {
     damage: 3,
     fireRate: 2,
     shootRange: 100,
-	speed: 2
+    speed: 2
 };
 
 //machine gun fast shots but low damage per hit
@@ -58,7 +58,7 @@ var pewpewArchetype = {
     damage: 0.5,
     fireRate: 2,
     shootRange: 100,
-	speed: 2
+    speed: 2
 };
 
 //close range, one hit kills but needs to be right on top of them
@@ -67,35 +67,35 @@ var swordArchetype = {
     damage: 10,
     fireRate: 1.5,
     shootRange: 5,
-	speed: 3
+    speed: 3
 };
 
 //given the id return the character archetype
 function fetchArcheType(charClass) {
     //fetch the archetype given the id
-	switch(charClass){
-			case 1:
-				archetype = standardArchetype;
-				break;
-			case 2:
-				archetype = shotgunArchetype;
-				break;
-			case 3:
-				archetype = pewpewArchetype;
-				break;
-			case 4:
-				archetype = swordArchetype;
-				break;
-			default:
-				archetype = standardArchetype;
-				break;
-		}
-		return archetype;
+    switch (charClass) {
+        case 1:
+            archetype = standardArchetype;
+            break;
+        case 2:
+            archetype = shotgunArchetype;
+            break;
+        case 3:
+            archetype = pewpewArchetype;
+            break;
+        case 4:
+            archetype = swordArchetype;
+            break;
+        default:
+            archetype = standardArchetype;
+            break;
+    }
+    return archetype;
 }
 
 //change the player class. we kill the player so that they cannot cheat the system.
-function changeClass(user){
-	 players.forEach(function (player) {
+function changeClass(user) {
+    players.forEach(function (player) {
         if (player.id == user.id) {
             player.alive = false;
             player.archetype = addArcheType(user.charClass);
@@ -121,13 +121,13 @@ function updateUsers(user) {
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
         user.x = Math.round(Math.random() * 660) + 120;
         user.y = Math.round(Math.random() * 460) + 120;
-		console.log(user.charClass);
+        console.log(user.charClass);
         user.alive = true;
         user.direction = 'left';
-		user.archetype = fetchArcheType(user.charClass);
+        user.archetype = fetchArcheType(user.charClass);
         user.health = user.archetype.health;
-		user.lastFire = new Date();
-		players.push(user);
+        user.lastFire = new Date().getTime();
+        players.push(user);
         livePlayers++;
     }
 }
@@ -136,22 +136,22 @@ function updatePlayerLocation(movements) {
     players.forEach(function (player) {
         if (player.id == movements.user.id) {
             if (movements.xVelocity < 0) {
-				if(player.x > 100){
-					player.x -= player.archetype.speed;
-				}
+                if (player.x > 100) {
+                    player.x -= player.archetype.speed;
+                }
             } else if (movements.xVelocity > 0) {
-				if(player.x < 767){
-					player.x += player.archetype.speed;
-				}
+                if (player.x < 767) {
+                    player.x += player.archetype.speed;
+                }
             }
             if (movements.yVelocity < 0) {
-				if(player.y > 0){
-					player.y -= player.archetype.speed;
-				}
+                if (player.y > 0) {
+                    player.y -= player.archetype.speed;
+                }
             } else if (movements.yVelocity > 0) {
-				if(player.y < 567){
-				   player.y += player.archetype.speed;
-				}             
+                if (player.y < 567) {
+                    player.y += player.archetype.speed;
+                }
             }
         }
     });
@@ -171,15 +171,15 @@ function getWinner() {
 function updateGame() {
     //todo implement the different stats for shots, for instance range and damage.
     shots.forEach(function (shot, index, object) {
-	    if (shot.velocity == "left") {
+        if (shot.velocity == "left") {
             shot.x--;
         } else {
             shot.x++;
         }
-		shot.distanceTravelled++;
-		if(shot.distanceTravelled > shot.user.archetype.shootRange){
-			object.splice(index, 1);
-		}
+        shot.distanceTravelled++;
+        if (shot.distanceTravelled > shot.user.archetype.shootRange) {
+            object.splice(index, 1);
+        }
         if (shot.x > 800 || shot.x < 0 || shot.y > 600 || shot.y < 0) {
             object.splice(index, 1);
         }
@@ -192,11 +192,11 @@ function updateGame() {
                 && player.id != shot.user.id
                 && player.alive
             ) {
-				io.emit('splat', null);
+                io.emit('splat', null);
                 player.health = player.health - shot.user.archetype.damage;
                 object.splice(index, 1);
                 if (player.health < 1) {
-					player.health = 0;
+                    player.health = 0;
                     player.alive = false;
                     livePlayers--;
                     updateScore(shot);
@@ -253,21 +253,26 @@ function updateScore(shot) {
 
 //add  a bullet to the shots
 function addToShots(shot) {
-        //var cFire = new Date();
-	
-	//if ((cFire - lastFire) / 1000 >  shot.user.archetype.fireRate) {
-		//shot.user.lastFire = cFire;
-		//assign the user stats to the shot
-		var shotOffset = -5;
-		if (shot.user.direction != "left") {
-				shotOffset = 25
-		}
-		shot.x = shot.user.x + shotOffset;
-		shot.y = shot.user.y + 12;
-		shot.velocity = shot.user.direction;
-		shot.distanceTravelled = 0;
-		shots.push(shot);
-	//}
+    var cFire = new Date().getTime();
+    if ((cFire - shot.user.lastFire) / 1000 > 1 / shot.user.archetype.fireRate) {
+        shot.user.lastFire = cFire;
+        var shotOffset = -5;
+        if (shot.user.direction != "left") {
+            shotOffset = 25
+        }
+        shot.x = shot.user.x + shotOffset;
+        shot.y = shot.user.y + 12;
+        shot.velocity = shot.user.direction;
+        shot.distanceTravelled = 0;
+        shots.push(shot);
+        players.forEach(function (player) {
+            if (player.id == shot.user.id) {
+                player.lastFire = cFire;
+            }
+        });
+    }
+
+
 }
 
 //handle incoming messages
@@ -276,16 +281,16 @@ io.on('connection', function (socket) {
         messages.push(msg);
     });
 
-	socket.on('classChange',function(user){
-			changeClass(user);
-	});
+    socket.on('classChange', function (user) {
+        changeClass(user);
+    });
 
     socket.on('user', function (u) {
         updateUsers(u);
     });
 
     socket.on('disconnect', function (user) {
-        console.log("user has disconnected " + user );
+        console.log("user has disconnected " + user);
     });
 
     socket.on('shot', function (shot) {
