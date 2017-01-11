@@ -40,7 +40,6 @@ var backgroundMusic = new Audio('yackety.mp3');
 
 var image = playerLeft;
 
-var fireRate = 2;
 var lastFire = new Date();
 
 var socket = io();
@@ -54,7 +53,8 @@ var user = {
     direction: "left",
     alive: true,
     health: 4,
-	charClass: 2
+	charClass: 2,
+	lastShot: new Date()
 };
 
 var activeShots = [];
@@ -246,8 +246,8 @@ gameloop = setInterval(function () {
         };
         socket.emit('move', movement);
         if (firing) {
-            var cFire = new Date();
-            if ((cFire - lastFire) / 1000 > 1 / fireRate) {
+		    var cFire = new Date();
+            if ((cFire - lastFire) / 1000 > 1 / user.archetype.fireRate) {
                 var shotOffset = 0;
                 if (user.direction != "left") {
                     shotOffset = 25
@@ -256,9 +256,18 @@ gameloop = setInterval(function () {
                 var shot = {user:user};
                 socket.emit('shot', shot);
                 lastFire = cFire;
+        
+		
+		/**
+			var shot = {user:user};
+			
+			socket.emit('shot', shot);**/
+			
+			
             }
         }
-    }
+		}
+    
     socket.emit('user', user);
 },25);
 

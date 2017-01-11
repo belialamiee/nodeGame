@@ -16,7 +16,6 @@ var pauseData = {
     remainingTime: 10
 };
 
-
 var io = require('socket.io').listen(server);
 //set up the public folder to load audio, images and js scripts for the webpage.
 app.use(express.static('public'));
@@ -39,8 +38,8 @@ var speed = 2;
 var standardArchetype = {
     health: 4,
     damage: 1,
-    shootSpeed: 1,
-    shootRange: null,
+    fireRate: 2,
+    shootRange: 1000,
 	speed: 2
 };
 
@@ -48,7 +47,7 @@ var standardArchetype = {
 var shotgunArchetype = {
     health: 4,
     damage: 3,
-    shootSpeed: 1,
+    fireRate: 2,
     shootRange: 100,
 	speed: 2
 };
@@ -57,7 +56,7 @@ var shotgunArchetype = {
 var pewpewArchetype = {
     health: 4,
     damage: 0.5,
-    shootSpeed: 2,
+    fireRate: 2,
     shootRange: 100,
 	speed: 2
 };
@@ -66,8 +65,8 @@ var pewpewArchetype = {
 var swordArchetype = {
     health: 8,
     damage: 10,
-    shootSpeed: 0.5,
-    shootRange: 16,
+    fireRate: 1.5,
+    shootRange: 5,
 	speed: 3
 };
 
@@ -120,12 +119,14 @@ function updateUsers(user) {
     if (notFound) {
         user.score = 0;
         //don't want the player spawning on the edges of the screens, or with more health etc then it should.
-        user.x = Math.round(Math.random() * 460) + 20;
-        user.y = Math.round(Math.random() * 460) + 20;
+        user.x = Math.round(Math.random() * 660) + 120;
+        user.y = Math.round(Math.random() * 460) + 120;
+		console.log(user.charClass);
         user.alive = true;
         user.direction = 'left';
 		user.archetype = fetchArcheType(user.charClass);
         user.health = user.archetype.health;
+		user.lastFire = new Date();
 		players.push(user);
         livePlayers++;
     }
@@ -175,6 +176,10 @@ function updateGame() {
         } else {
             shot.x++;
         }
+		shot.distanceTravelled++;
+		if(shot.distanceTravelled > shot.user.archetype.shootRange){
+			object.splice(index, 1);
+		}
         if (shot.x > 800 || shot.x < 0 || shot.y > 600 || shot.y < 0) {
             object.splice(index, 1);
         }
@@ -184,13 +189,14 @@ function updateGame() {
                 && shot.x < player.x + 22
                 && shot.y > player.y - 5
                 && shot.y < player.y + 27
-                && player.id != shot.user
+                && player.id != shot.user.id
                 && player.alive
             ) {
 				io.emit('splat', null);
                 player.health = player.health - shot.user.archetype.damage;
                 object.splice(index, 1);
                 if (player.health < 1) {
+					player.health = 0;
                     player.alive = false;
                     livePlayers--;
                     updateScore(shot);
@@ -230,8 +236,8 @@ function updateGame() {
 function restartGame() {
     players.forEach(function (player) {
         player.alive = true;
-        player.x = Math.round(Math.random() * 480);
-        player.y = Math.round(Math.random() * 480);
+        player.x = Math.round(Math.random() * 660) + 120;
+        player.y = Math.round(Math.random() * 460) + 120;
         player.health = 4;
     });
     livePlayers = players.length;
@@ -247,24 +253,34 @@ function updateScore(shot) {
 
 //add  a bullet to the shots
 function addToShots(shot) {
-	//assign the user stats to the shot
-	var shotOffset = 0;
-    if (shot.user.direction != "left") {
-            shotOffset = 25
-    }
-	shot.x = shot.user.x + shotOffset;
-	shot.y = shot.user.y;
-	shot.velocity = shot.user.direction;
-	shots.push(shot);
+		//var cFire = new Date();
+	
+	//if ((cFire - lastFire) / 1000 >  shot.user.archetype.fireRate) {
+		var shotOffset = 0;
+			if (shot.user.direction != "left") {
+				shotOffset = 25
+			}
+			//todo just send the user and have the app do this work
+		//shot.user.lastFire = cFire;			
+		//assign the user stats to the shot
+		var shotOffset = -5;
+		if (shot.user.direction != "left") {
+				shotOffset = 25
+		}
+		shot.x = shot.user.x + shotOffset;
+		shot.y = shot.user.y + 12;
+		shot.velocity = shot.user.direction;
+		shot.distanceTravelled = 0;
+		shots.push(shot);
+	//}
 }
 
 //handle incoming messages
 io.on('connection', function (socket) {
-
     socket.on('msg', function (msg) {
         messages.push(msg);
     });
-	
+
 	socket.on('classChange',function(user){
 			changeClass(user);
 	});
