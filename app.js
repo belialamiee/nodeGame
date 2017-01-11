@@ -253,15 +253,10 @@ function updateScore(shot) {
 
 //add  a bullet to the shots
 function addToShots(shot) {
-		//var cFire = new Date();
+        //var cFire = new Date();
 	
 	//if ((cFire - lastFire) / 1000 >  shot.user.archetype.fireRate) {
-		var shotOffset = 0;
-			if (shot.user.direction != "left") {
-				shotOffset = 25
-			}
-			//todo just send the user and have the app do this work
-		//shot.user.lastFire = cFire;			
+		//shot.user.lastFire = cFire;
 		//assign the user stats to the shot
 		var shotOffset = -5;
 		if (shot.user.direction != "left") {

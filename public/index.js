@@ -53,8 +53,8 @@ var user = {
     direction: "left",
     alive: true,
     health: 4,
-	charClass: 2,
-	lastShot: new Date()
+    charClass: 2,
+    lastShot: new Date()
 };
 
 var activeShots = [];
@@ -88,62 +88,65 @@ $("#chat").on("blur", function () {
 });
 
 
-
 //draw canvas
 function drawCanvas() {
     if (!gamePaused && !changingClass) {
-        updateScores();
         ctx.clearRect(0, 0, 800, 600);
-		
+        updateScores();
+        drawSideBar();
         ctx.drawImage(background, 100, 0, 800, 600);
-        if (players) {
-            players.forEach(function (player) {
-                if (player.direction == "left") {
-                    image = playerLeft;
-                } else {
-                    image = playerRight;
-                }
-                if (!player.alive) {
-                    image = deadImage;
-                }
-				//draw the change class button
-				ctx.fillStyle = "#FFF";
-				ctx.fillRect(5,10,90,30);
-				ctx.fillStyle = "#000";
-				ctx.lineWidth = 1;
-				ctx.strokeRect(5,10,90,30);
-				ctx.font = "12px Arial";
-				ctx.fillText('Change Class',10,30)
-				
-				//draw the rest of the game screen
-                ctx.drawImage(image, player.x, player.y, 32, 32);
-                ctx.beginPath();
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 4;
-                ctx.moveTo(player.x, player.y + 32);
-                ctx.lineTo(player.x + (player.health * 8), player.y + 32);
-                ctx.stroke();
-            });
-        }
+        drawPlayers();
+        drawSideBar();
         if (activeShots) {
             activeShots.forEach(function (shot) {
                 ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
             });
         }
-    } else{
+    } else {
         //display endGame message.
         drawGameOverScreen();
     }
 }
 
+
+function drawPlayers() {
+    if (players) {
+        players.forEach(function (player) {
+            if (player.direction == "left") {
+                image = playerLeft;
+            } else {
+                image = playerRight;
+            }
+            if (!player.alive) {
+                image = deadImage;
+            }
+            //draw the rest of the game screen
+            ctx.drawImage(image, player.x, player.y, 32, 32);
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 4;
+            ctx.moveTo(player.x, player.y + 32);
+            ctx.lineTo(player.x + (player.health * 8), player.y + 32);
+            ctx.stroke();
+        });
+    }
+}
+
 //handles changing the class
-function drawChangeClass(){
+function drawChangeClass() {
 
 }
 
 //draw the scores onto the screen itself.
-function drawScores(){
-	
+function drawSideBar() {
+    //draw the change class button
+    ctx.fillStyle = "#FFF";
+    ctx.fillRect(5, 10, 90, 30);
+    ctx.fillStyle = "#000";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(5, 10, 90, 30);
+    ctx.font = "12px Arial";
+    ctx.fillText('Change Class', 10, 30);
 }
 
 function drawGameOverScreen() {
@@ -192,7 +195,7 @@ $(document).keyup(function (key) {
         down = false;
     }
     if (event.which == 32) {
-	    firing = false;
+        firing = false;
     }
 });
 
@@ -210,7 +213,7 @@ $(document).keydown(function (key) {
         down = true;
     }
     if (event.which == 32) {
-	key.preventDefault();
+        key.preventDefault();
         firing = true;
     }
 });
@@ -246,30 +249,26 @@ gameloop = setInterval(function () {
         };
         socket.emit('move', movement);
         if (firing) {
-		    var cFire = new Date();
+            var cFire = new Date();
             if ((cFire - lastFire) / 1000 > 1 / user.archetype.fireRate) {
                 var shotOffset = 0;
                 if (user.direction != "left") {
                     shotOffset = 25
                 }
-				//todo just send the user and have the app do this work
-                var shot = {user:user};
+                //todo just send the user and have the app do this work
+                var shot = {user: user};
                 socket.emit('shot', shot);
                 lastFire = cFire;
-        
-		
-		/**
-			var shot = {user:user};
-			
-			socket.emit('shot', shot);**/
-			
-			
+                /**
+                 var shot = {user:user};
+                 socket.emit('shot', shot);
+                 **/
             }
         }
-		}
-    
+    }
+
     socket.emit('user', user);
-},25);
+}, 25);
 
 //handle incoming information
 socket.on('players', function (users) {
