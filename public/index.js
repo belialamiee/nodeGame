@@ -62,8 +62,31 @@ c.addEventListener('click',function(e){
 		changingClass = true;
 		//add in event handler for the sections of the screen
     }
-
+	
+	if(changingClass){
+		//110, 140, 100, 50
+		if(e.offsetX < 210 && e.offsetX > 110 && e.offsetY < 190 && e.offsetY > 140 ){
+			changeClass(1);
+		}
+		
+		//110, 440, 100, 50
+		if(e.offsetX < 210 && e.offsetX > 110 && e.offsetY < 490 && e.offsetY > 440 ){
+			changeClass(2);
+		}
+		
+		//470, 140, 100, 50
+		if(e.offsetX < 570 && e.offsetX > 470 && e.offsetY < 190 && e.offsetY > 140 ){
+			changeClass(3);
+		}
+		
+		//470, 440, 100, 50
+		if(e.offsetX < 570 && e.offsetX > 470 && e.offsetY < 490 && e.offsetY > 440 ){
+			changeClass(4);
+		}
+	}
 });
+
+
 var ctx = c.getContext("2d");
 
 //enter works on chat and username updates
@@ -147,6 +170,9 @@ function drawPlayers() {
 
 //handles changing the class
 function drawChangeClass() {
+	//todo replace the image with an image of the class when we make those
+	//todo style these to look nice.
+	
     ctx.clearRect(100, 0, 800, 600);
     //split into 4 sections
 	//soldier
@@ -156,6 +182,10 @@ function drawChangeClass() {
 	ctx.fillText("Damage: 1", 110, 60);
 	ctx.fillText("Range: 1000", 110, 80);
 	ctx.fillText("FireRate: 2", 110, 100);
+	ctx.strokeRect(110, 140, 100, 50);
+	ctx.fillText('SELECT', 140, 170);
+	ctx.drawImage(image,300,70,128,128);
+	
 	
 	//shotgun
 	ctx.strokeRect(100,301,0,600);
@@ -164,7 +194,9 @@ function drawChangeClass() {
 	ctx.fillText("Damage: 3", 110, 360);
 	ctx.fillText("Range: 100", 110, 380);
 	ctx.fillText("FireRate: 4", 110, 400);
-
+	ctx.strokeRect(110, 440, 100, 50);
+	ctx.fillText('SELECT', 140, 470);
+	ctx.drawImage(image,300,370,128,128);
     
 	//pewpew
 	ctx.strokeRect(451,0,800,0);
@@ -173,8 +205,10 @@ function drawChangeClass() {
 	ctx.fillText("Damage: 0.5", 460, 60);
 	ctx.fillText("Range: 1000", 460, 80);
 	ctx.fillText("FireRate: 1", 460, 100);
-
-    
+	ctx.strokeRect(470, 140, 100, 50);
+    ctx.fillText('SELECT', 500, 170);
+	ctx.drawImage(image,650,70,128,128);
+		
 	//sword
 	ctx.strokeRect(451,301,800,600);
 	ctx.fillText("Swordsman",460, 320)
@@ -182,7 +216,9 @@ function drawChangeClass() {
 	ctx.fillText("Damage: 10", 460, 360);
 	ctx.fillText("Range: 20", 460, 380);
 	ctx.fillText("FireRate: 2", 460, 400);
-
+	ctx.strokeRect(470, 440, 100, 50);
+	ctx.fillText('SELECT', 500, 470);
+	ctx.drawImage(image,650,370,128,128);
 }
 
 //draw the scores onto the screen itself.
@@ -221,16 +257,23 @@ function updateScores() {
 		ctx.lineWidth = 1;
         ctx.fillText(player.username,x,y);
         y = y + 20;
-		console.log(player);
         ctx.fillText(player.score,x,y);
-        ctx.beginPath();
+        y = y + 20;
+		ctx.fillText(player.archetype.name,x,y);
+		y = y + 10;
+		ctx.beginPath();
         ctx.strokeStyle = '#ff0000';
-        y = y + 10;
         ctx.moveTo(x, y);
         ctx.lineTo(x + (player.health * 16), y);
         ctx.stroke();
         y = y + 20;
     });
+}
+
+function changeClass(archetype){
+	user.charClass = archetype;
+	socket.emit('classChange', user);
+	changingClass = false;
 }
 
 var left = false;

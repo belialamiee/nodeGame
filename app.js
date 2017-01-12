@@ -36,7 +36,8 @@ var speed = 2;
 //archetypes
 //standard shooter
 var standardArchetype = {
-    health: 4,
+    name:"Soldier",
+	health: 4,
     damage: 1,
     fireRate: 2,
     shootRange: 1000,
@@ -45,6 +46,7 @@ var standardArchetype = {
 
 //high damage but short range
 var shotgunArchetype = {
+	name:"Shot Gunner",
     health: 4,
     damage: 3,
     fireRate: 2,
@@ -54,7 +56,8 @@ var shotgunArchetype = {
 
 //machine gun fast shots but low damage per hit
 var pewpewArchetype = {
-    health: 4,
+    name:"Machine Gunner",
+	health: 4,
     damage: 0.5,
     fireRate: 4,
     shootRange: 1000,
@@ -63,11 +66,12 @@ var pewpewArchetype = {
 
 //close range, one hit kills but needs to be right on top of them
 var swordArchetype = {
-    health: 8,
+    name:"Swordsman",
+	health: 8,
     damage: 10,
     fireRate: 1.5,
     shootRange: 5,
-    speed: 3
+    speed: 4
 };
 
 //given the id return the character archetype
@@ -98,7 +102,7 @@ function changeClass(user) {
     players.forEach(function (player) {
         if (player.id == user.id) {
             player.alive = false;
-            player.archetype = addArcheType(user.charClass);
+            player.archetype = fetchArcheType(user.charClass);
             livePlayers--;
 
         }
@@ -180,7 +184,7 @@ function updateGame() {
         if (shot.distanceTravelled > shot.user.archetype.shootRange) {
             object.splice(index, 1);
         }
-        if (shot.x > 800 || shot.x < 0 || shot.y > 600 || shot.y < 0) {
+        if (shot.x > 800 || shot.x < 100 || shot.y > 600 || shot.y < 0) {
             object.splice(index, 1);
         }
         players.forEach(function (player) {
@@ -200,7 +204,6 @@ function updateGame() {
                     player.alive = false;
                     livePlayers--;
                     updateScore(shot);
-                    shots = [];
                     console.log(player.username + " was killed");
                 }
             }
@@ -240,6 +243,7 @@ function restartGame() {
         player.y = Math.round(Math.random() * 460) + 120;
         player.health = 4;
     });
+	shots = [];
     livePlayers = players.length;
 }
 
