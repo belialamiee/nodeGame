@@ -38,6 +38,7 @@ var backgroundMusic = new Audio('yackety.mp3');
 
 var image = playerLeft;
 var socket = io();
+var lastFire = new Date();
 
 //our user with defaults.
 var user = {
@@ -49,7 +50,7 @@ var user = {
     alive: true,
     health: 4,
     charClass: 2,
-    lastShot: new Date()
+    lastFire: new Date()
 };
 
 var activeShots = [];
@@ -58,6 +59,8 @@ var c = document.getElementById("myCanvas");
 c.addEventListener('click',function(e){
     if(e.offsetX < 90 && e.offsetX > 5 && e.offsetY > 10 && e.offsetY < 30 ){
         //handle change class
+		changingClass = true;
+		//add in event handler for the sections of the screen
     }
 
 });
@@ -94,10 +97,10 @@ $("#chat").on("blur", function () {
 
 //draw canvas
 function drawCanvas() {
-    if (!gamePaused && !changingClass) {
-        ctx.clearRect(0, 0, 800, 600);
-        updateScores();
-        drawSideBar();
+	ctx.font = "12px Arial";
+	ctx.lineWidth = 1;
+	drawSideBar();    if (!gamePaused && !changingClass) {
+        ctx.clearRect(100, 0, 800, 600);   
         ctx.drawImage(background, 100, 0, 800, 600);
         drawPlayers();
         drawSideBar();
@@ -106,6 +109,9 @@ function drawCanvas() {
                 ctx.drawImage(shotImage, shot.x, shot.y, 8, 8);
             });
         }
+		}else if (changingClass){
+		
+		drawChangeClass();
     } else {
         //display endGame message.
         drawGameOverScreen();
@@ -138,50 +144,68 @@ function drawPlayers() {
 
 //handles changing the class
 function drawChangeClass() {
-    ctx.clearRect(0, 0, 800, 600);
+    ctx.clearRect(100, 0, 800, 600);
     //split into 4 sections
-    ctx.strokeRect(0,0,400,300);
-    ctx.strokeRect(0,0,400,300);
-    ctx.strokeRect(401,301,800,600);
-    ctx.strokeRect(401,301,800,600);
+	//soldier
+    ctx.strokeRect(100,0,351,300);
+	ctx.fillText("Soldier",110, 20)	
+    
+	//shotgun
+	ctx.strokeRect(100,301,0,600);
+	ctx.fillText("Shot Gunner",110, 320)
+    
+    
+	//pewpew
+	ctx.strokeRect(451,0,800,0);
+	ctx.fillText("Machine Gunner",460, 20)
+    
+    
+	//sword
+	ctx.strokeRect(451,301,800,600);
+	ctx.fillText("Soldier",460, 320)
+    
 }
 
 //draw the scores onto the screen itself.
 function drawSideBar() {
-    //draw the change class button
+	//draw the change class button
+	ctx.clearRect(0,0,100,600);
+	updateScores();
+	ctx.lineWidth = 1;
     ctx.fillStyle = "#FFF";
     ctx.fillRect(5, 10, 90, 30);
     ctx.fillStyle = "#000";
-    ctx.lineWidth = 1;
     ctx.strokeRect(5, 10, 90, 30);
-    ctx.font = "12px Arial";
     ctx.fillText('Change Class', 10, 30);
 }
 
 function drawGameOverScreen() {
-    ctx.clearRect(0, 0, 800, 600);
+    ctx.clearRect(100, 0, 800, 600);
     ctx.fillStyle = "#FFF";
-    ctx.drawImage(background, 0, 0, 800, 600);
-    ctx.fillRect(40, 120, 400, 250);
+    ctx.drawImage(background, 100, 0, 800, 600);
+    ctx.fillRect(240, 120, 400, 250);
     ctx.fillStyle = "#000";
     ctx.font = "30px Arial";
-    ctx.fillText("Game Over please wait ", 70, 180);
-    ctx.fillText("for the game to resume", 70, 210);
-    ctx.fillText("The winner was " + winner, 70, 240);
-    ctx.fillText("Restarting in " + restartingIn + " seconds", 70, 270);
+    ctx.fillText("Game Over please wait ", 270, 180);
+    ctx.fillText("for the game to resume", 270, 210);
+    ctx.fillText("The winner was " + winner, 270, 240);
+    ctx.fillText("Restarting in " + restartingIn + " seconds", 270, 270);
 }
 
 //update the scores
 function updateScores() {
     var x = 5;
     var y = 60;
+	
     players.forEach(function (player) {
+		ctx.clearRect(0, 0, 100, 0);
+		ctx.lineWidth = 1;
         ctx.fillText(player.username,x,y);
         y = y + 20;
+		console.log(player);
         ctx.fillText(player.score,x,y);
         ctx.beginPath();
         ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 4;
         y = y + 10;
         ctx.moveTo(x, y);
         ctx.lineTo(x + (player.health * 16), y);
@@ -260,8 +284,17 @@ gameloop = setInterval(function () {
         };
         socket.emit('move', movement);
         if (firing) {
-            var shot = {user: user};
-            socket.emit('shot', shot);
+		//throttle requests sent to the server. although whether to fire or not is truly handled by the server, we can throttle the requests here to reduce the load.
+		  var cFire = new Date();
+             if ((cFire - lastFire) / 1000 > 1 / user.archetype.fireRate) {
+                 var shotOffset = 0;
+                 if (user.direction != "left") {
+                     shotOffset = 25
+                 }
+                 var shot = {user: user};
+                 socket.emit('shot', shot);
+                 lastFire = cFire;
+             }
         }
     }
     socket.emit('user', user);

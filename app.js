@@ -245,7 +245,7 @@ function restartGame() {
 
 function updateScore(shot) {
     players.forEach(function (player) {
-        if (shot.user == player.id) {
+        if (shot.user.id == player.id) {
             player.score++;
         }
     });
