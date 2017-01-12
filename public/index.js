@@ -49,7 +49,7 @@ var user = {
     direction: "left",
     alive: true,
     health: 4,
-    charClass: 2,
+    charClass: Math.floor(Math.random() * 4) + 1,
     lastFire: new Date()
 };
 
@@ -136,6 +136,9 @@ function drawPlayers() {
             ctx.strokeStyle = '#ff0000';
             ctx.lineWidth = 4;
             ctx.moveTo(player.x, player.y + 32);
+
+			var percentageHealthRemaining = player.archetype.health / player.health * 100;
+			
             ctx.lineTo(player.x + (player.health * 8), player.y + 32);
             ctx.stroke();
         });
@@ -149,21 +152,37 @@ function drawChangeClass() {
 	//soldier
     ctx.strokeRect(100,0,351,300);
 	ctx.fillText("Soldier",110, 20)	
-    
+	ctx.fillText("Health: 4", 110, 40);
+	ctx.fillText("Damage: 1", 110, 60);
+	ctx.fillText("Range: 1000", 110, 80);
+	ctx.fillText("FireRate: 2", 110, 100);
+	
 	//shotgun
 	ctx.strokeRect(100,301,0,600);
 	ctx.fillText("Shot Gunner",110, 320)
-    
+	ctx.fillText("Health: 4", 110, 340);
+	ctx.fillText("Damage: 3", 110, 360);
+	ctx.fillText("Range: 100", 110, 380);
+	ctx.fillText("FireRate: 4", 110, 400);
+
     
 	//pewpew
 	ctx.strokeRect(451,0,800,0);
 	ctx.fillText("Machine Gunner",460, 20)
-    
+	ctx.fillText("Health: 4", 460, 40);
+	ctx.fillText("Damage: 0.5", 460, 60);
+	ctx.fillText("Range: 1000", 460, 80);
+	ctx.fillText("FireRate: 1", 460, 100);
+
     
 	//sword
 	ctx.strokeRect(451,301,800,600);
-	ctx.fillText("Soldier",460, 320)
-    
+	ctx.fillText("Swordsman",460, 320)
+	ctx.fillText("Health: 8", 460, 340);
+	ctx.fillText("Damage: 10", 460, 360);
+	ctx.fillText("Range: 20", 460, 380);
+	ctx.fillText("FireRate: 2", 460, 400);
+
 }
 
 //draw the scores onto the screen itself.

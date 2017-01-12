@@ -56,8 +56,8 @@ var shotgunArchetype = {
 var pewpewArchetype = {
     health: 4,
     damage: 0.5,
-    fireRate: 2,
-    shootRange: 100,
+    fireRate: 4,
+    shootRange: 1000,
     speed: 2
 };
 
