@@ -37,7 +37,8 @@ var splat = new Audio('splat.wav');
 var backgroundMusic = new Audio('yackety.mp3');
 
 var image = playerLeft;
-var socket = io();
+var socket = io.connect('http://shooter-belialamiee.rhcloud.com:8080',{reconnect:true});
+//var socket = io.connect('192.168.1.8:8080',{reconnect:true});
 var lastFire = new Date();
 
 //our user with defaults.
