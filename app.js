@@ -1,14 +1,13 @@
 var express = require('express');
 var app = express();
 //getting it work on openshift
-//var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-//var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-//var server = app.listen(server_port, server_ip_address);
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || 'localhost';
+var server = app.listen(server_port, server_ip_address);
 
 //local environment
-var port = process.env.PORT || 8080;
-var server = app.listen(port);
-var _ = require('lodash');
+//var port = process.env.PORT || 8080;
+//var server = app.listen(port);
 
 var pauseData = {
     paused: true,
