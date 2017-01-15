@@ -38,7 +38,8 @@ var backgroundMusic = new Audio('yackety.mp3');
 
 var image = playerLeft;
 //var socket = io.connect('http://shooter-belialamiee.rhcloud.com:8080',{reconnect:true});
-var socket = io.connect('192.168.1.8:8080',{reconnect:true});
+//var socket = io.connect('192.168.1.133:8080',{reconnect:true});
+var socket = io.connect();
 var lastFire = new Date();
 
 //our user with defaults.
@@ -163,7 +164,7 @@ function drawPlayers() {
 
 			var percentageHealthRemaining = player.archetype.health / player.health * 100;
 			
-            ctx.lineTo(player.x + (player.health * 8), player.y + 32);
+            ctx.lineTo(player.x + (percentageHealthRemaining / 3), player.y + 32);
             ctx.stroke();
         });
     }
@@ -265,7 +266,8 @@ function updateScores() {
 		ctx.beginPath();
         ctx.strokeStyle = '#ff0000';
         ctx.moveTo(x, y);
-        ctx.lineTo(x + (player.health * 16), y);
+		var percentageHealthRemaining = player.archetype.health / player.health * 100;
+        ctx.lineTo(x + (percentageHealthRemaining /1.5), y);
         ctx.stroke();
         y = y + 20;
     });
