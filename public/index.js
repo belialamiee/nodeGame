@@ -315,7 +315,6 @@ $(document).keydown(function (key) {
         down = true;
     }
     if (event.which == 32) {
-        key.preventDefault();
         firing = true;
     }
 });
